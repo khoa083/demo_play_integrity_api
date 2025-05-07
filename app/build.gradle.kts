@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.kblack.demo_play_integrity_api"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.kblack.demo_play_integrity_api"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 

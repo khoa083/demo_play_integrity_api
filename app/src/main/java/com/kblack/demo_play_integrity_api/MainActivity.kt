@@ -5,12 +5,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.kblack.demo_play_integrity_api.databinding.ActivityMainBinding
+import com.kblack.demo_play_integrity_api.utils.Utils.Companion.playIntegrityRequest
 
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null
     private val activityBinding get() = _binding!!
+
+    private val _checkIntegrityTokenResult = MutableLiveData<String>()
+    val checkIntegrityTokenResult: LiveData<String> = _checkIntegrityTokenResult
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +34,10 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         activityBinding.apply {
-
+            btnVerify.setOnClickListener {
+                playIntegrityRequest(applicationContext, _checkIntegrityTokenResult)
+            }
+            txtResult.text = checkIntegrityTokenResult.value
         }
     }
 

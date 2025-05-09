@@ -1,15 +1,10 @@
 package com.kblack.demo_play_integrity_api.utils
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.android.play.core.integrity.IntegrityManagerFactory
-import okio.ByteString
-import okio.ByteString.Companion.encode
-import kotlin.math.floor
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.integrity.IntegrityTokenRequest
 import com.google.android.play.core.integrity.IntegrityTokenResponse
@@ -24,8 +19,6 @@ import okhttp3.Callback
 import java.io.IOException
 import okhttp3.Response
 import java.security.SecureRandom
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
 class Utils {
     companion object {
@@ -46,11 +39,11 @@ class Utils {
 //        }
         private fun getNonce(length: Int = 16): String {
             val random = SecureRandom()
-            val bytes = ByteArray(length) // Tạo mảng byte ngẫu nhiên
+            val bytes = ByteArray(length)
             random.nextBytes(bytes)
             return Base64.encodeToString(
                 bytes,
-                Base64.URL_SAFE or Base64.NO_WRAP // Base64 web-safe no-wrap
+                Base64.URL_SAFE or Base64.NO_WRAP
             )
         }
 
@@ -71,7 +64,6 @@ class Utils {
                             .setCloudProjectNumber(683679993739) // hardcoded for now
                             .build()
                     )
-
                 // do play integrity api call
                 integrityTokenResponse.addOnSuccessListener { response ->
 //                    val integrityToken: String = response.token()

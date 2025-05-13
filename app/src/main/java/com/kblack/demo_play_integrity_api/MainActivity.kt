@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
             }
             viewModel.resultTxt.observeNonNull(this@MainActivity) {
                 txtResult.text = viewModel.resultTxt.value
+                viewModel.clearTxt()
             }
         }
     }

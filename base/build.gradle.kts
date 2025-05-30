@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.kblack.demo_play_integrity_api"
+    namespace = "com.kblack.base"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.kblack.demo_play_integrity_api"
+        applicationId = "com.kblack.base"
         minSdk = 28
         targetSdk = 35
         versionCode = 1
@@ -27,16 +27,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
-    buildFeatures {
-        viewBinding = true
-    }
-
 }
 
 dependencies {
@@ -45,13 +41,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.bundles.retrofit2)
-    implementation(libs.bundles.okhttp)
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.bundles.lifecycleAware)
-    implementation(libs.playIntegrityApi)
 }

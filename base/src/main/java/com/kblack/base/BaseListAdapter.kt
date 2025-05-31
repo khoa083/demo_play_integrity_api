@@ -64,34 +64,5 @@ abstract class BaseListAdapter<T : Any, VB : ViewDataBinding>(
 
 }
 
-/**
- * paging adapter
- */
-//abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding>(
-//    callBack: DiffUtil.ItemCallback<T>
-//) : PagingDataAdapter<T, BaseViewHolder<VB>>(callBack),
-//    BaseRecyclerAdapter<T, VB> {
-//
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<VB> {
-//        return BaseViewHolder(DataBindingUtil.inflate<VB>(
-//            LayoutInflater.from(parent.context),
-//            getLayoutRes(viewType),
-//            parent, false
-//        ).apply {
-//            bindFirstTime(this)
-//        })
-//    }
-//
-//    override fun onBindViewHolder(holder: BaseViewHolder<VB>, position: Int) {
-//        // adapter uses getItem() to detect loading
-//        val item: T? = getItem(position)
-//        holder.binding.setVariable(BR.item, item)
-//        if (item != null) {
-//            bindView(holder.binding, item, position)
-//        }
-//        holder.binding.executePendingBindings()
-//    }
-//}
-
 
 open class BaseViewHolder<VB : ViewDataBinding>(val binding: VB) : RecyclerView.ViewHolder(binding.root)

@@ -1,8 +1,8 @@
 package com.kblack.base
 
 import android.content.Context
-import com.kblack.base.base.network.NetworkMonitor
-import com.kblack.project_base.base.network.NetworkMonitorImpl
+import com.kblack.base.network.NetworkMonitor
+import com.kblack.base.network.NetworkMonitorImpl
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

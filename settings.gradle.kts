@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "demo-play-integrity-api"
 include(":app")
 include(":base")
+include(":baselineprofile")

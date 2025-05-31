@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.kblack.base.BR
+//import com.kblack.base.BR
 import java.util.concurrent.Executors
 
 
@@ -53,14 +53,14 @@ abstract class BaseListAdapter<T : Any, VB : ViewDataBinding>(
         })
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<VB>, position: Int) {
-        val item: T? = getItem(position)
-        holder.binding.setVariable(BR.item, item)
-        if (item != null) {
-            bindView(holder.binding, item, position)
-        }
-        holder.binding.executePendingBindings()
-    }
+//    override fun onBindViewHolder(holder: BaseViewHolder<VB>, position: Int) {
+//        val item: T? = getItem(position)
+//        holder.binding.setVariable(BR.item, item)
+//        if (item != null) {
+//            bindView(holder.binding, item, position)
+//        }
+//        holder.binding.executePendingBindings()
+//    }
 
 }
 

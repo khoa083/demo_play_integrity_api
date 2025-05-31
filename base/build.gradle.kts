@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.navigation)
@@ -10,11 +10,8 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.kblack.base"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,15 +26,21 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_23
+        targetCompatibility = JavaVersion.VERSION_23
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "23"
     }
     buildFeatures {
         viewBinding = true
         dataBinding = true
+    }
+    defaultConfig{
+        vectorDrawables.useSupportLibrary = true
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 

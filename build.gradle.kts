@@ -6,8 +6,11 @@ import kotlin.apply
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.android.library) apply false
     alias(libs.plugins.android.ksp) apply false
     alias(libs.plugins.android.navigationSafeArgs) apply false
+    alias(libs.plugins.android.test) apply false
+    alias(libs.plugins.baselineprofile) apply false
 }
 
 val versions = mapOf(

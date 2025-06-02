@@ -9,10 +9,9 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
 
     override val viewModel: MainActivityViewModel by viewModels()
     override val layoutId: Int = R.layout.activity_main
-    override val idView: Int = R.id.main
+    override val idContainerView: Int = R.id.main
 
-    override fun onResume() {
-        super.onResume()
+    override fun setupView(activityBinding: ActivityMainBinding) {
         activityBinding.apply {
             btnVerify.setOnClickListener {
                 viewModel.playIntegrityRequest(applicationContext)
@@ -24,15 +23,7 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
         }
     }
 
-    override fun setupView(activityBinding: ActivityMainBinding) {
-        TODO("Not yet implemented")
-    }
-
     override fun showView(isShow: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setStatusBar() {
         TODO("Not yet implemented")
     }
 

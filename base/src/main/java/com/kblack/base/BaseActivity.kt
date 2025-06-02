@@ -1,7 +1,6 @@
 package com.kblack.base
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -14,25 +13,27 @@ abstract class BaseActivity<VB: ViewDataBinding, VM: BaseViewModel> : AppCompatA
 
     abstract val viewModel: VM
     abstract val layoutId: Int
-    abstract val idView: Int
+    abstract val idContainerView: Int
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        _binding = DataBindingUtil.setContentView(this, layoutId)
-        activityBinding.lifecycleOwner = this
-        setupView(activityBinding)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(idView)) { v, insets ->
+    private fun setSystemBars() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(idContainerView)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        _binding = DataBindingUtil.setContentView(this, layoutId)
+        activityBinding.lifecycleOwner = this
+        setupView(activityBinding)
+        setSystemBars()
+    }
+
     abstract fun setupView(activityBinding: VB)
 
     abstract fun showView(isShow: Boolean)
-
-    abstract fun setStatusBar()
 
     override fun onDestroy() {
         super.onDestroy()

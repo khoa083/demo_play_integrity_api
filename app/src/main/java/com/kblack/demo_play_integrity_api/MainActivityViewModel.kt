@@ -5,11 +5,11 @@ import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.IntegrityTokenRequest
 import com.google.android.play.core.integrity.IntegrityTokenResponse
+import com.kblack.base.BaseViewModel
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -22,7 +22,8 @@ import org.json.JSONObject
 import java.io.IOException
 import java.security.SecureRandom
 
-class MainActivityViewModel : ViewModel() {
+class MainActivityViewModel : BaseViewModel() {
+
     protected val _resultTxt = MutableLiveData<String?>()
     val resultTxt: LiveData<String?> = _resultTxt
 

@@ -1,33 +1,15 @@
 package com.kblack.demo_play_integrity_api
 
-import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.kblack.base.BaseActivity
 import com.kblack.demo_play_integrity_api.databinding.ActivityMainBinding
 import com.kblack.demo_play_integrity_api.utils.Utils.Companion.observeNonNull
 
-class MainActivity : AppCompatActivity() {
+class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>() {
 
-    private var _binding: ActivityMainBinding? = null
-    private val activityBinding get() = _binding!!
-
-    private val viewModel: MainActivityViewModel by viewModels()
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        _binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(activityBinding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-    }
+    override val viewModel: MainActivityViewModel by viewModels()
+    override val layoutId: Int = R.layout.activity_main
+    override val idView: Int = R.id.main
 
     override fun onResume() {
         super.onResume()
@@ -42,8 +24,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+    override fun setupView(activityBinding: ActivityMainBinding) {
+        TODO("Not yet implemented")
     }
+
+    override fun showView(isShow: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setStatusBar() {
+        TODO("Not yet implemented")
+    }
+
 }

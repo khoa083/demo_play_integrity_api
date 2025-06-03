@@ -2,7 +2,6 @@ package com.kblack.demo_play_integrity_api
 
 import android.content.Context
 import android.util.Base64
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -12,21 +11,10 @@ import com.google.android.play.core.integrity.IntegrityTokenRequest
 import com.google.android.play.core.integrity.IntegrityTokenResponse
 import com.kblack.base.BaseViewModel
 import com.kblack.base.utils.DataResult
-import com.kblack.demo_play_integrity_api.model.PIAFrame
 import com.kblack.demo_play_integrity_api.model.PIAResponse
 import com.kblack.demo_play_integrity_api.repository.Repository
 import com.kblack.demo_play_integrity_api.utils.Constant
 import kotlinx.coroutines.launch
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import org.json.JSONObject
-import java.io.IOException
 import java.security.SecureRandom
 
 class MainActivityViewModel(

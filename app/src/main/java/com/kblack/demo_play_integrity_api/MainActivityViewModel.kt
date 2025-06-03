@@ -5,11 +5,18 @@ import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.IntegrityTokenRequest
 import com.google.android.play.core.integrity.IntegrityTokenResponse
 import com.kblack.base.BaseViewModel
+import com.kblack.base.utils.DataResult
+import com.kblack.demo_play_integrity_api.model.PIAFrame
+import com.kblack.demo_play_integrity_api.model.PIAResponse
+import com.kblack.demo_play_integrity_api.repository.Repository
+import com.kblack.demo_play_integrity_api.utils.Constant
+import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -22,97 +29,58 @@ import org.json.JSONObject
 import java.io.IOException
 import java.security.SecureRandom
 
-class MainActivityViewModel : BaseViewModel() {
+class MainActivityViewModel(
+    private val repository: Repository = Repository()
+) : BaseViewModel() {
 
-    protected val _resultTxt = MutableLiveData<String?>()
-    val resultTxt: LiveData<String?> = _resultTxt
+    private val _result = MutableLiveData<DataResult<PIAResponse>?>()
+    val result: LiveData<DataResult<PIAResponse>?> = _result
 
-    fun clearTxt() {
-        _resultTxt.postValue(null)
+    fun clearResult() {
+        _result.value = null
     }
 
-    private val TAG = "smleenull"
-    private val client = OkHttpClient()
-
-
-    /**
-     * generates a nonce locally
-     */
-//        private fun getNonce(length: Int): ByteString {
-//            var nonce = ""
-//            val allowed = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-//            for (i in 0 until length) {
-//                nonce += allowed[floor(Math.random() * allowed.length).toInt()].toString()
-//            }
-//            return nonce.encode()
-//        }
     private fun getNonce(length: Int = 16): String {
         val random = SecureRandom()
         val bytes = ByteArray(length)
         random.nextBytes(bytes)
-        return Base64.encodeToString(
-            bytes,
-            Base64.URL_SAFE or Base64.NO_WRAP
-        )
+        return Base64.encodeToString(bytes, Base64.URL_SAFE or Base64.NO_WRAP)
     }
 
-    fun playIntegrityRequest(
-        applicationContext: Context
-    ) {
+    fun playIntegrityRequest(applicationContext: Context) {
         val nonce = getNonce(16)
         try {
             val integrityManager = IntegrityManagerFactory.create(applicationContext)
-
             val integrityTokenResponse: Task<IntegrityTokenResponse> =
                 integrityManager.requestIntegrityToken(
                     IntegrityTokenRequest.builder()
                         .setNonce(nonce)
-                        .setCloudProjectNumber(683679993739)
+                        .setCloudProjectNumber(Constant.CLOUD_PROJECT_NUMBER)
                         .build()
                 )
             integrityTokenResponse.addOnSuccessListener { response ->
-//                    val integrityToken: String = response.token()
-                val baseUrl = "https://be-integrityapi.vercel.app"
-                // println(integrityToken)
-
-                try {
-                    val jsonParams = JSONObject()
-                    jsonParams.put("integrityToken", response.token())
-                    val jsonData = jsonParams.toString()
-                    val requestBody: RequestBody = jsonData.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-
-                    Log.d(TAG, jsonData)
-
-                    val request = Request.Builder()
-                        .url("${baseUrl}/verify-integrity")
-                        .post(requestBody)
-                        .build()
-
-                    client.newCall(request).enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            e.printStackTrace()
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
-                            val bodyString = response.body?.string()
-                            Log.d(TAG, bodyString?:"Success")
-                            _resultTxt.postValue(if (response.isSuccessful) "$bodyString" else "Request failed")
-                        }
-                    })
-
-
-
-                } catch (e: Exception) {
-                    Log.d(TAG, "can't decode Play Integrity response")
-                    e.printStackTrace()
-                }
+                sendTokenToServer(response.token())
             }.addOnFailureListener { e ->
-                e.printStackTrace()
-                Log.d(TAG, "API Error, see Android UI for error message")
+                _result.postValue(DataResult.error("API Error: ${e.message}"))
             }
-
         } catch (e: Exception) {
-            e.printStackTrace()
+            _result.postValue(DataResult.error("Exception: ${e.message}"))
+        }
+    }
+
+    private fun sendTokenToServer(token: String) {
+        viewModelScope.launch {
+            _result.postValue(DataResult.loading())
+            try {
+                val response = repository.sendToken(token)
+                if (response.isSuccessful && response.body() != null) {
+                    _result.postValue(DataResult.success(response.body() as PIAResponse))
+                } else {
+                    _result.postValue(DataResult.error("Request failed: ${response.code()}"))
+                }
+            } catch (e: Exception) {
+                _result.postValue(DataResult.error("Network error: ${e.message}"))
+            }
         }
     }
 }

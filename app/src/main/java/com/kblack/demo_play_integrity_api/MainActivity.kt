@@ -2,6 +2,7 @@ package com.kblack.demo_play_integrity_api
 
 import androidx.activity.viewModels
 import com.kblack.base.BaseActivity
+import com.kblack.base.utils.DataResult
 import com.kblack.demo_play_integrity_api.databinding.ActivityMainBinding
 import com.kblack.demo_play_integrity_api.utils.Utils.Companion.observeNonNull
 
@@ -16,9 +17,21 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
             btnVerify.setOnClickListener {
                 viewModel.playIntegrityRequest(applicationContext)
             }
-            viewModel.resultTxt.observeNonNull(this@MainActivity) {
-                txtResult.text = viewModel.resultTxt.value
-                viewModel.clearTxt()
+            viewModel.result.observeNonNull(this@MainActivity) { dataResult ->
+                when (dataResult?.status) {
+                    DataResult.Status.LOADING -> {
+                        txtResult.text = "Loading..."
+                    }
+                    DataResult.Status.SUCCESS -> {
+                        txtResult.text = dataResult.data?.toString() ?: "No data"
+                    }
+                    DataResult.Status.ERROR -> {
+                        txtResult.text = dataResult.message ?: "Unknown error"
+                    }
+
+                    null -> TODO()
+                }
+                viewModel.clearResult()
             }
         }
     }

@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.Task
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.IntegrityTokenRequest
 import com.google.android.play.core.integrity.IntegrityTokenResponse
+import com.kblack.base.BaseRepository
 import com.kblack.base.BaseViewModel
 import com.kblack.base.utils.DataResult
 import com.kblack.demo_play_integrity_api.model.PIAResponse
@@ -47,7 +48,7 @@ class MainActivityViewModel(
                         .build()
                 )
             integrityTokenResponse.addOnSuccessListener { response ->
-                sendTokenToServer(response.token())
+                sendTokenToServer(response.token(), applicationContext)
             }.addOnFailureListener { e ->
                 _result.postValue(DataResult.error("API Error: ${e.message}"))
             }
@@ -56,18 +57,15 @@ class MainActivityViewModel(
         }
     }
 
-    private fun sendTokenToServer(token: String) {
+    //------------------
+    private fun sendTokenToServer(token: String, context: Context) {
         viewModelScope.launch {
-            _result.postValue(DataResult.loading())
-            try {
-                val response = repository.sendToken(token)
-                if (response.isSuccessful && response.body() != null) {
-                    _result.postValue(DataResult.success(response.body() as PIAResponse))
-                } else {
-                    _result.postValue(DataResult.error("Request failed: ${response.code()}"))
+            repository.sendToken(token, context).collect { result ->
+                when (result) {
+                    is BaseRepository.Result.Loading -> _result.postValue(DataResult.loading())
+                    is BaseRepository.Result.Success -> _result.postValue(DataResult.success(result.data))
+                    is BaseRepository.Result.Error -> _result.postValue(DataResult.error(result.exception.message))
                 }
-            } catch (e: Exception) {
-                _result.postValue(DataResult.error("Network error: ${e.message}"))
             }
         }
     }

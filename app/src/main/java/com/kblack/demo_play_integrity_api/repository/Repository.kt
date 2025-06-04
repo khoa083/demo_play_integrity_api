@@ -1,12 +1,17 @@
 package com.kblack.demo_play_integrity_api.repository
 
+import android.content.Context
+import com.kblack.base.BaseRepository
 import com.kblack.demo_play_integrity_api.api.RetrofitClient
 import com.kblack.demo_play_integrity_api.model.PIAResponse
 import com.kblack.demo_play_integrity_api.request.PIARequest
-import retrofit2.Response
+import kotlinx.coroutines.flow.Flow
 
-class Repository {
-    suspend fun sendToken(token: String): Response<PIAResponse> {
-        return RetrofitClient.apiService.sendToken(PIARequest(token))
+class Repository : BaseRepository(){
+    fun sendToken(token: String, context: Context): Flow<Result<PIAResponse>> {
+        return executeNetworkCall(
+            call = { RetrofitClient.apiService.sendToken(PIARequest(token)).body()!! },
+            context = context
+        )
     }
 }

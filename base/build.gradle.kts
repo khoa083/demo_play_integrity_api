@@ -16,15 +16,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_23
         targetCompatibility = JavaVersion.VERSION_23
@@ -35,12 +26,6 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
-    }
-    defaultConfig{
-        vectorDrawables.useSupportLibrary = true
-    }
-    buildFeatures {
-        buildConfig = true
     }
 }
 

@@ -1,4 +1,4 @@
-package com.kblack.project_base.extensions
+package com.kblack.base.extensions
 
 import android.app.Activity
 import android.widget.Toast

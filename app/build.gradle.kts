@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.navigation)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.baselineprofile)
     id("kotlin-kapt")
 }
 
@@ -43,10 +42,6 @@ android {
         lintConfig = file("lint.xml")
     }
 
-//    baselineProfile {
-//        dexLayoutOptimization = true
-//    }
-
     defaultConfig {
         applicationId = "com.kblack.demo_play_integrity_api"
         minSdk = ((rootProject.extra["versions"] as Map<*, *>)["min_sdk"] as Int?)!!
@@ -66,7 +61,7 @@ android {
             "MY_COMMIT_NAME",
             "\"${rootProject.extra["commitMessage"] as String}\""
         )
-        setProperty("archivesBaseName", "ToeicK-$versionName${versionNameSuffix ?: ""}")
+        setProperty("archivesBaseName", "Kblack-$versionName${versionNameSuffix ?: ""}")
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -133,7 +128,6 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.bundles.lifecycleAware)
     implementation(libs.playIntegrityApi)
-    "baselineProfile"(project(":baselineprofile"))
 }
 
 kapt {

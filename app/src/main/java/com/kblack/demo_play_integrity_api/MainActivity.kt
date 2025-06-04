@@ -2,9 +2,11 @@ package com.kblack.demo_play_integrity_api
 
 import androidx.activity.viewModels
 import com.kblack.base.BaseActivity
+import com.kblack.base.extensions.clickWithTrigger
 import com.kblack.base.utils.DataResult
 import com.kblack.demo_play_integrity_api.databinding.ActivityMainBinding
 import com.kblack.demo_play_integrity_api.utils.Utils.Companion.observeNonNull
+import com.kblack.base.extensions.toast
 
 class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>() {
 
@@ -14,25 +16,30 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
 
     override fun setupView(activityBinding: ActivityMainBinding) {
         activityBinding.apply {
-            btnVerify.setOnClickListener {
+            btnVerify.clickWithTrigger {
                 viewModel.playIntegrityRequest(applicationContext)
             }
-            viewModel.result.observeNonNull(this@MainActivity) { dataResult ->
-                when (dataResult?.status) {
-                    DataResult.Status.LOADING -> {
-                        txtResult.text = "Loading..."
-                    }
-                    DataResult.Status.SUCCESS -> {
-                        txtResult.text = dataResult.data?.toString() ?: "No data"
-                    }
-                    DataResult.Status.ERROR -> {
-                        txtResult.text = dataResult.message ?: "Unknown error"
-                    }
+            observeData(this@apply)
+        }
+    }
 
-                    null -> TODO()
+    private fun observeData(activityBinding: ActivityMainBinding) {
+        viewModel.result.observeNonNull(this@MainActivity) { dataResult ->
+            when (dataResult?.status) {
+                DataResult.Status.LOADING -> {
+                    activityBinding.txtResult.text = "Loading..."
                 }
-                viewModel.clearResult()
+                DataResult.Status.SUCCESS -> {
+                    activityBinding.txtResult.text = dataResult.data?.toString() ?: "No data"
+                    this@MainActivity.toast("${dataResult.data?.appIntegrity?.appRecognitionVerdict}")
+                }
+                DataResult.Status.ERROR -> {
+                    activityBinding.txtResult.text = dataResult.message ?: "Unknown error"
+                }
+
+                null -> this@MainActivity.toast("DataResult is null")
             }
+            viewModel.clearResult()
         }
     }
 

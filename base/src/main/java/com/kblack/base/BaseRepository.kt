@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import java.sql.SQLException
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * BaseRepository provides a standardized way to handle data operations.
@@ -21,7 +22,8 @@ import java.sql.SQLException
  */
 abstract class BaseRepository(
     protected val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val cache: MutableMap<String, Any> = mutableMapOf()
+    private val cache: MutableMap<String, Any> = ConcurrentHashMap(),
+    private val networkMonitor: NetworkMonitor
 ) {
 
     sealed class Result<out T> {
@@ -58,15 +60,12 @@ abstract class BaseRepository(
         }
 
         try {
-            val result = withContext(ioDispatcher) {
-                cacheKey?.let { key ->
-                    cache[key]?.let { cachedData ->
-                        return@withContext cachedData as T
-                    }
-                }
-                val data = call()
+            val result = cacheKey?.let { key ->
+                cache[key] as? T
+            } ?: run {
+                val data: T = call()
                 cacheKey?.let { key -> cache[key] = data as Any }
-                data
+                data as (T & Any)
             }
             emit(Result.Success(result))
         } catch (e: HttpException) {

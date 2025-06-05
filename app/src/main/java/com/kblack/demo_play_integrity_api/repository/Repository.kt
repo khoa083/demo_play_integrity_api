@@ -7,7 +7,7 @@ import com.kblack.demo_play_integrity_api.model.PIAResponse
 import com.kblack.demo_play_integrity_api.request.PIARequest
 import kotlinx.coroutines.flow.Flow
 
-class Repository : BaseRepository(){
+class Repository : BaseRepository() {
     fun sendToken(token: String, context: Context): Flow<Result<PIAResponse>> {
         return executeNetworkCall(
             call = { RetrofitClient.apiService.sendToken(PIARequest(token)).body()!! },

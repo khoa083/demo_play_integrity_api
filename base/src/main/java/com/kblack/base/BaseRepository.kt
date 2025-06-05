@@ -1,6 +1,7 @@
 package com.kblack.base
 
 import android.content.Context
+import android.util.Log
 import com.kblack.base.network.NetworkMonitor
 import com.kblack.base.network.NetworkMonitorImpl
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap
 abstract class BaseRepository(
     protected val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val cache: MutableMap<String, Any> = ConcurrentHashMap(),
-    private val networkMonitor: NetworkMonitor
 ) {
 
     sealed class Result<out T> {
@@ -65,7 +65,8 @@ abstract class BaseRepository(
             } ?: run {
                 val data: T = call()
                 cacheKey?.let { key -> cache[key] = data as Any }
-                data as (T & Any)
+                Log.d("KBLACK", "executeNetworkCall: $cache")
+                data
             }
             emit(Result.Success(result))
         } catch (e: HttpException) {

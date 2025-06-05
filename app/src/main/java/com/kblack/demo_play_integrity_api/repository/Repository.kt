@@ -11,7 +11,8 @@ class Repository : BaseRepository() {
     fun sendToken(token: String, context: Context): Flow<Result<PIAResponse>> {
         return executeNetworkCall(
             call = { RetrofitClient.apiService.sendToken(PIARequest(token)).body()!! },
-            context = context
+            context = context,
+            cacheKey = "sendToken_$"
         )
     }
 }

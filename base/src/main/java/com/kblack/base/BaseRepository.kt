@@ -65,7 +65,6 @@ abstract class BaseRepository(
             } ?: run {
                 val data: T = call()
                 cacheKey?.let { key -> cache[key] = data as Any }
-                Log.d("KBLACK", "executeNetworkCall: $cache")
                 data
             }
             emit(Result.Success(result))

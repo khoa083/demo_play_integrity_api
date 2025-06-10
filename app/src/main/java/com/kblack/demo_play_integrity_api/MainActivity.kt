@@ -1,5 +1,6 @@
 package com.kblack.demo_play_integrity_api
 
+import android.os.Bundle
 import androidx.activity.viewModels
 import com.kblack.base.BaseActivity
 import com.kblack.base.extensions.clickWithTrigger
@@ -13,6 +14,11 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
     override val viewModel: MainActivityViewModel by viewModels()
     override val layoutId: Int = R.layout.activity_main
     override val idContainerView: Int = R.id.main
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.prepareIntegrityTokenProvider(applicationContext)
+    }
 
     override fun setupView(activityBinding: ActivityMainBinding) {
         activityBinding.apply {
@@ -29,10 +35,12 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
                 DataResult.Status.LOADING -> {
                     activityBinding.txtResult.text = "Loading..."
                 }
+
                 DataResult.Status.SUCCESS -> {
                     activityBinding.txtResult.text = dataResult.data?.toString() ?: "No data"
                     this@MainActivity.toast("${dataResult.data?.appIntegrity?.appRecognitionVerdict}")
                 }
+
                 DataResult.Status.ERROR -> {
                     activityBinding.txtResult.text = dataResult.message ?: "Unknown error"
                 }

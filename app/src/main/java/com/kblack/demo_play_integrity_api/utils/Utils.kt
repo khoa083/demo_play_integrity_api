@@ -22,7 +22,7 @@ class Utils {
          * @param length The length of the nonce to generate. Default is 16 bytes.
          * @return A Base64 URL-safe encoded nonce string.
          */
-        fun getNonce(length: Int = 16): String {
+        fun getRequestHashLocal(length: Int = 16): String {
             val random = SecureRandom()
             val bytes = ByteArray(length)
             random.nextBytes(bytes)

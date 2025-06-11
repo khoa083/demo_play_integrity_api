@@ -18,7 +18,7 @@ import com.kblack.base.utils.DataResult
 import com.kblack.demo_play_integrity_api.model.PIAResponse
 import com.kblack.demo_play_integrity_api.repository.Repository
 import com.kblack.demo_play_integrity_api.utils.Constant.CLOUD_PROJECT_NUMBER
-import com.kblack.demo_play_integrity_api.utils.Utils.Companion.getNonce
+import com.kblack.demo_play_integrity_api.utils.Utils.Companion.getRequestHashLocal
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel(
@@ -30,11 +30,7 @@ class MainActivityViewModel(
     private val _result = MutableLiveData<DataResult<PIAResponse>?>()
     val result: LiveData<DataResult<PIAResponse>?> = _result
 
-    private lateinit var integrityTokenProvider: StandardIntegrityTokenProvider
-
-    fun clearResult() {
-        _result.value = null
-    }
+    private var integrityTokenProvider: StandardIntegrityTokenProvider? = null
 
     fun prepareIntegrityTokenProvider(applicationContext: Context) {
         val standardIntegrityManager: StandardIntegrityManager =
@@ -53,26 +49,30 @@ class MainActivityViewModel(
     }
 
     fun playIntegrityRequest(applicationContext: Context) {
-        val nonce = getNonce(16)
+        val requestHash = getRequestHashLocal()
         try {
-            val integrityTokenResponse: Task<StandardIntegrityToken> =
-                integrityTokenProvider.request(
+            val integrityTokenResponse: Task<StandardIntegrityToken?>? =
+                integrityTokenProvider?.request(
                     StandardIntegrityTokenRequest.builder()
-                        .setRequestHash(nonce)
+                        .setRequestHash(requestHash)
                         .build()
                 )
             integrityTokenResponse
-                .addOnSuccessListener { response ->
+                ?.addOnSuccessListener { response ->
                     sendTokenToServer(
-                        response.token(),
+                        response?.token().toString(),
                         applicationContext
                     )
                 }
-                .addOnFailureListener { exception -> handleError(exception) }
+                ?.addOnFailureListener { exception -> handleError(exception) }
 
         } catch (e: Exception) {
             _result.postValue(DataResult.error("Exception: ${e.message}"))
         }
+    }
+
+    fun clearResult() {
+        _result.value = null
     }
 
     private fun sendTokenToServer(token: String, context: Context) {

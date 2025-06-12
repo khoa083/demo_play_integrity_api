@@ -90,5 +90,7 @@ class MainActivityViewModel(
     private fun handleError(exception: Exception) {
         Log.e(TAG, "Error preparing integrity token provider: ${exception.message}")
         _result.postValue(DataResult.error("Error preparing integrity token provider: ${exception.message}"))
+        exception.printStackTrace()
+        integrityTokenProvider = null  // Reset the provider on error
     }
 }

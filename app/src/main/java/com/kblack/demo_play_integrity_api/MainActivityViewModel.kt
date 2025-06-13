@@ -93,4 +93,9 @@ class MainActivityViewModel(
         exception.printStackTrace()
         integrityTokenProvider = null  // Reset the provider on error
     }
+
+    //------------------------------------------------------
+    private fun sendTokenToLocal(token: String, context: Context) {
+
+    }
 }

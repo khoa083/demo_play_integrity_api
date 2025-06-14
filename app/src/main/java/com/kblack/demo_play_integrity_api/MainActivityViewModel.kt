@@ -96,6 +96,6 @@ class MainActivityViewModel(
 
     //------------------------------------------------------
     private fun sendTokenToLocal(token: String, context: Context) {
-
+        TODO("Not yet implemented")
     }
 }

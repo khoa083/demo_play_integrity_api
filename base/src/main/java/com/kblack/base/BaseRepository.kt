@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 abstract class BaseRepository(
     protected val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val cache: MutableMap<String, Any> = ConcurrentHashMap(),
+    private val cache: MutableMap<String, Any?> = ConcurrentHashMap(),
 ) {
 
     sealed class Result<out T> {
@@ -63,7 +63,7 @@ abstract class BaseRepository(
                 cache[key] as? T
             } ?: run {
                 val data: T = call()
-                cacheKey?.let { key -> cache[key] = data as Any }
+                cacheKey?.let { key -> cache[key] = data }
                 data
             }
             emit(Result.Success(result))

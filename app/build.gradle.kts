@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -61,6 +63,11 @@ android {
             "MY_COMMIT_NAME",
             "\"${rootProject.extra["commitMessage"] as String}\""
         )
+        val properties = Properties().apply {
+            load(rootProject.file("local.properties").inputStream())
+        }
+        buildConfigField("String", "base64_of_encoded_decryption_key", "\"" + properties["base64_of_encoded_decryption_key"] + "\"")
+        buildConfigField("String", "base64_of_encoded_verification_key", "\"" + properties["base64_of_encoded_verification_key"] + "\"")
         setProperty("archivesBaseName", "Kblack-$versionName${versionNameSuffix ?: ""}")
         vectorDrawables {
             useSupportLibrary = true
@@ -128,6 +135,7 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.bundles.lifecycleAware)
     implementation(libs.playIntegrityApi)
+    implementation(libs.jose4j)
 }
 
 kapt {

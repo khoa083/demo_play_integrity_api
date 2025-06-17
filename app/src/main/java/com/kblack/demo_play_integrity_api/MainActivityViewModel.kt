@@ -2,7 +2,6 @@ package com.kblack.demo_play_integrity_api
 
 import android.content.Context
 import android.util.Base64
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -35,8 +34,6 @@ class MainActivityViewModel(
     private val repository: Repository = Repository()
 ) : BaseViewModel() {
 
-    private val TAG = "MainActivityViewModel"
-
     private val _result = MutableLiveData<DataResult<PIAResponse>?>()
     val result: LiveData<DataResult<PIAResponse>?> = _result
 
@@ -53,7 +50,6 @@ class MainActivityViewModel(
         )
             .addOnSuccessListener { tokenProvider ->
                 integrityTokenProvider = tokenProvider
-                Log.d(TAG, "StandardIntegrityTokenProvider ready. $tokenProvider")
             }
             .addOnFailureListener { exception -> handleError(exception) };
     }
@@ -98,7 +94,6 @@ class MainActivityViewModel(
     }
 
     private fun handleError(exception: Exception) {
-        Log.e(TAG, "Error preparing integrity token provider: ${exception.message}")
         _result.postValue(DataResult.error("Error preparing integrity token provider: ${exception.message}"))
         exception.printStackTrace()
         integrityTokenProvider = null  // Reset the provider on error

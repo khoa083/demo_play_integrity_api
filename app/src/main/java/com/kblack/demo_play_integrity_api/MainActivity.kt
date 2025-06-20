@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import androidx.activity.viewModels
 import com.kblack.base.BaseActivity
 import com.kblack.base.extensions.clickWithTrigger
@@ -13,6 +14,7 @@ import com.kblack.demo_play_integrity_api.utils.Utils.Companion.observeNonNull
 import com.kblack.base.extensions.toast
 import java.util.regex.Pattern
 import androidx.core.graphics.toColorInt
+import com.google.gson.Gson
 
 class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>() {
 
@@ -35,7 +37,7 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
     }
 
     private fun observeData(activityBinding: ActivityMainBinding) {
-        viewModel.result.observeNonNull(this@MainActivity) { dataResult ->
+        viewModel.resultRAW.observeNonNull(this@MainActivity) { dataResult ->
             when (dataResult?.status) {
                 DataResult.Status.LOADING -> {
                     activityBinding.txtResult.text = "Loading..."
@@ -43,7 +45,9 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
 
                 DataResult.Status.SUCCESS -> {
 //                    activityBinding.txtResult.text = dataResult.data?.toString() ?: "No data"
-                    activityBinding.txtResult.text = formatJsonWithColors("""{"requestDetails":{"requestPackageName":"com.kblack.demo_play_integrity_api.debug","timestampMillis":"1750347436428","requestHash":"y2li4p8pbwGTNaJZx9XhxQ=="},"appIntegrity":{"appRecognitionVerdict":"UNEVALUATED"},"deviceIntegrity":{},"accountDetails":{"appLicensingVerdict":"UNEVALUATED"}}""")
+                    val jsonString = Gson().toJson(dataResult.data)
+                    activityBinding.txtResult.text = formatJsonWithColors(jsonString)
+                    Log.d("a", "observeData: ${dataResult.data?.toString() ?: "No data"}")
                 }
 
                 DataResult.Status.ERROR -> {
@@ -88,7 +92,7 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
     private fun formatJsonString(jsonString: String): String {
         return try {
             val jsonObject = org.json.JSONObject(jsonString)
-            jsonObject.toString(4)
+            jsonObject.toString(2)
         } catch (e: Exception) {
             jsonString
         }

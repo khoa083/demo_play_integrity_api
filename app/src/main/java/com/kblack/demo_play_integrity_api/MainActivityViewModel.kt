@@ -37,6 +37,9 @@ class MainActivityViewModel(
     private val _result = MutableLiveData<DataResult<PIAResponse>?>()
     val result: LiveData<DataResult<PIAResponse>?> = _result
 
+    private val _resultRAW = MutableLiveData<DataResult<Any>?>()
+    val resultRAW: LiveData<DataResult<Any>?> = _resultRAW
+
     private var integrityTokenProvider: StandardIntegrityTokenProvider? = null
 
     fun prepareIntegrityTokenProvider(applicationContext: Context) {
@@ -83,11 +86,18 @@ class MainActivityViewModel(
 
     private fun sendTokenToServer(token: String, context: Context) {
         viewModelScope.launch {
-            repository.sendToken(token, context).collect { result ->
+//            repository.sendToken(token, context).collect { result ->
+//                when (result) {
+//                    is BaseRepository.Result.Loading -> _result.postValue(DataResult.loading())
+//                    is BaseRepository.Result.Success -> _result.postValue(DataResult.success(result.data))
+//                    is BaseRepository.Result.Error -> _result.postValue(DataResult.error(result.exception.message))
+//                }
+//            }
+            repository.sendTokenRaw(token, context).collect { result ->
                 when (result) {
-                    is BaseRepository.Result.Loading -> _result.postValue(DataResult.loading())
-                    is BaseRepository.Result.Success -> _result.postValue(DataResult.success(result.data))
-                    is BaseRepository.Result.Error -> _result.postValue(DataResult.error(result.exception.message))
+                    is BaseRepository.Result.Loading -> _resultRAW.postValue(DataResult.loading())
+                    is BaseRepository.Result.Success -> _resultRAW.postValue(DataResult.success(result.data))
+                    is BaseRepository.Result.Error -> _resultRAW.postValue(DataResult.error(result.exception.message))
                 }
             }
         }

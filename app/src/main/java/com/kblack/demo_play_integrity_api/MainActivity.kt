@@ -47,7 +47,7 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
 //                    activityBinding.txtResult.text = dataResult.data?.toString() ?: "No data"
                     val jsonString = Gson().toJson(dataResult.data)
                     activityBinding.txtResult.text = formatJsonWithColors(jsonString)
-                    Log.d("a", "observeData: ${dataResult.data?.toString() ?: "No data"}")
+                    // if use toString() method, it will not format the json string
                 }
 
                 DataResult.Status.ERROR -> {

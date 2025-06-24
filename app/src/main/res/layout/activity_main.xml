@@ -22,23 +22,12 @@
             android:textColor="@color/white"/>
 
         <Button
-            android:id="@+id/btnGetHash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnTerms"
-            android:layout_marginTop="10dp"
-            android:text="Get hash"
-            android:textColor="@color/white"/>
-
-        <Button
             android:id="@+id/btnVerify"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnGetHash"
+            app:layout_constraintTop_toBottomOf="@+id/btnTerms"
             android:layout_marginTop="10dp"
             android:text="Verify"
             android:textColor="@color/white"/>

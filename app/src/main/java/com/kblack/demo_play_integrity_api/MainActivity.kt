@@ -25,8 +25,16 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
     override fun setupView(activityBinding: ActivityMainBinding) {
         activityBinding.apply {
             btnVerify.clickWithTrigger {
+                viewModel.clearResult()
                 viewModel.playIntegrityRequest(applicationContext)
             }
+            btnVerifyLocal.apply {
+                clickWithTrigger {
+                    viewModel.clearResult()
+                    viewModel.playIntegrityRequestForLocal(applicationContext)
+                }
+            }
+
             observeData(this@apply)
         }
     }

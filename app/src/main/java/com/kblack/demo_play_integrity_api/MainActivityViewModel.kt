@@ -2,11 +2,14 @@ package com.kblack.demo_play_integrity_api
 
 import android.content.Context
 import android.util.Base64
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.integrity.IntegrityManagerFactory
+import com.google.android.play.core.integrity.IntegrityTokenRequest
+import com.google.android.play.core.integrity.IntegrityTokenResponse
 import com.google.android.play.core.integrity.StandardIntegrityManager
 import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
 import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityToken
@@ -18,6 +21,7 @@ import com.kblack.base.BaseViewModel
 import com.kblack.base.utils.DataResult
 import com.kblack.demo_play_integrity_api.model.PIAResponse
 import com.kblack.demo_play_integrity_api.repository.Repository
+import com.kblack.demo_play_integrity_api.utils.Constant
 import com.kblack.demo_play_integrity_api.utils.Constant.CLOUD_PROJECT_NUMBER
 import com.kblack.demo_play_integrity_api.utils.Utils.Companion.getRequestHashLocal
 import kotlinx.coroutines.launch
@@ -81,6 +85,7 @@ class MainActivityViewModel(
     }
 
     fun clearResult() {
+        _resultRAW.value = null
         _result.value = null
     }
 
@@ -109,8 +114,30 @@ class MainActivityViewModel(
         integrityTokenProvider = null  // Reset the provider on error
     }
 
+    fun playIntegrityRequestForLocal(applicationContext: Context) {
+        val nonce = getRequestHashLocal()
+        try {
+            val integrityManager = IntegrityManagerFactory.create(applicationContext)
+            val integrityTokenResponse: Task<IntegrityTokenResponse> =
+                integrityManager.requestIntegrityToken(
+                    IntegrityTokenRequest.builder()
+                        .setNonce(nonce)
+//                        .setCloudProjectNumber(CLOUD_PROJECT_NUMBER)
+                        .build()
+                )
+            integrityTokenResponse.addOnSuccessListener { response ->
+                sendTokenToLocal(response.token(), applicationContext)
+            }.addOnFailureListener { e ->
+                handleError(e)
+            }
+        } catch (e: Exception) {
+            _result.postValue(DataResult.error("Exception: ${e.message}"))
+        }
+    }
+
+
     // TODO: Try pushing a version to internal test.
-    private fun sendTokenToLocal(token: String) {
+    private fun sendTokenToLocal(token: String, applicationContext: Context) {
         val base64OfEncodedDecryptionKey = BuildConfig.base64_of_encoded_decryption_key
         val base64OfEncodedVerificationKey = BuildConfig.base64_of_encoded_verification_key
 
@@ -151,7 +178,13 @@ class MainActivityViewModel(
         val gson = Gson()
         val piaResponse: PIAResponse = gson.fromJson(payload, PIAResponse::class.java)
 
-        _result.postValue(piaResponse.let {
+        Toast.makeText(
+            applicationContext,
+            "PIA Response: $piaResponse",
+            Toast.LENGTH_LONG
+        ).show()
+
+        _resultRAW.postValue(piaResponse.let {
             DataResult.success(it)
         })
     }

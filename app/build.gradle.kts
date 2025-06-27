@@ -13,7 +13,16 @@ android {
     compileSdk = ((rootProject.extra["versions"] as Map<*, *>)["target_sdk"] as Int?)!!
 
     signingConfigs {
+        create("release") {
+            val properties = Properties().apply {
+                load(rootProject.file("local.properties").inputStream())
+            }
 
+            storeFile = file(properties["RELEASE_STORE_FILE"] as String)
+            storePassword = properties["RELEASE_STORE_PASSWORD"] as String
+            keyAlias = properties["RELEASE_KEY_ALIAS"] as String
+            keyPassword = properties["RELEASE_KEY_PASSWORD"] as String
+        }
     }
 
 //    androidResources {
@@ -82,6 +91,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             isPseudoLocalesEnabled = true

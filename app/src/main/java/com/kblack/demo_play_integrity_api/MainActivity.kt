@@ -1,6 +1,7 @@
 package com.kblack.demo_play_integrity_api
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import com.kblack.base.BaseActivity
 import com.kblack.base.extensions.clickWithTrigger
@@ -50,6 +51,9 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
 //                    activityBinding.txtResult.text = dataResult.data?.toString() ?: "No data"
                     val jsonString = Gson().toJson(dataResult.data)
                     activityBinding.txtResult.text = formatJsonWithColors(jsonString)
+                    if (BuildConfig.DEBUG) {
+                        Toast.makeText(this, "$jsonString", Toast.LENGTH_LONG).show()
+                    }
                     // if use toString() method, it will not format the json string
                 }
 

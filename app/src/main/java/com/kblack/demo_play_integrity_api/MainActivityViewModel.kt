@@ -69,7 +69,8 @@ class MainActivityViewModel(
                 ?.addOnFailureListener { exception -> handleError(exception) }
 
         } catch (e: Exception) {
-            _result.postValue(DataResult.error("Exception: ${e.message}"))
+            _resultRAW.postValue(DataResult.error("Exception: ${e.message}"))
+            _resultRAW.value = null
         }
     }
 
@@ -98,7 +99,7 @@ class MainActivityViewModel(
     }
 
     private fun handleError(exception: Exception) {
-        _result.postValue(DataResult.error("Error preparing integrity token provider: ${exception.message}"))
+        _resultRAW.postValue(DataResult.error("Error preparing integrity token provider: ${exception.message}"))
         exception.printStackTrace()
         integrityTokenProvider = null  // Reset the provider on error
     }
@@ -115,12 +116,13 @@ class MainActivityViewModel(
                         .build()
                 )
             integrityTokenResponse.addOnSuccessListener { response ->
-                sendTokenToLocal(response.token(), _resultRAW)
+                sendTokenToLocal(response.token(), _resultRAW, applicationContext)
             }.addOnFailureListener { e ->
                 handleError(e)
             }
         } catch (e: Exception) {
-            _result.postValue(DataResult.error("Exception: ${e.message}"))
+            _resultRAW.postValue(DataResult.error("Exception: ${e.message}"))
+            _resultRAW.value = null
         }
     }
 }

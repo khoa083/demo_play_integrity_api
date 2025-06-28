@@ -1,5 +1,6 @@
 package com.kblack.demo_play_integrity_api.utils
 
+import android.content.Context
 import android.util.Base64
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -52,7 +53,7 @@ class Utils {
          */
 
         // TODO: Only on build internal testing can test
-        fun sendTokenToLocal(token: String, _resultRAW: MutableLiveData<DataResult<Any>?>) {
+        fun sendTokenToLocal(token: String, _resultRAW: MutableLiveData<DataResult<Any>?>, applicationContext: Context) {
             val base64OfEncodedDecryptionKey = BuildConfig.base64_of_encoded_decryption_key
             val base64OfEncodedVerificationKey = BuildConfig.base64_of_encoded_verification_key
 

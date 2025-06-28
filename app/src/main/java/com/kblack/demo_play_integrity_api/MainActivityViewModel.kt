@@ -136,7 +136,7 @@ class MainActivityViewModel(
     }
 
 
-    // TODO: Try pushing a version to internal test.
+    // TODO: Only on build internal testing can test
     private fun sendTokenToLocal(token: String, applicationContext: Context) {
         val base64OfEncodedDecryptionKey = BuildConfig.base64_of_encoded_decryption_key
         val base64OfEncodedVerificationKey = BuildConfig.base64_of_encoded_verification_key

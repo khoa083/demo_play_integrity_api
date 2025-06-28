@@ -26,12 +26,10 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
     override fun setupView(activityBinding: ActivityMainBinding) {
         activityBinding.apply {
             btnVerify.clickWithTrigger {
-                viewModel.clearResult()
                 viewModel.playIntegrityRequest(applicationContext)
             }
             btnVerifyLocal.apply {
                 clickWithTrigger {
-                    viewModel.clearResult()
                     viewModel.playIntegrityRequestForLocal(applicationContext)
                 }
             }
@@ -41,7 +39,7 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
     }
 
     private fun observeData(activityBinding: ActivityMainBinding) {
-        viewModel.resultRAW.observeNonNull(this@MainActivity) { dataResult ->
+        viewModel.resultRAW.observe(this@MainActivity) { dataResult ->
             when (dataResult?.status) {
                 DataResult.Status.LOADING -> {
                     activityBinding.txtResult.text = "Loading..."
@@ -63,7 +61,6 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
 
                 null -> this@MainActivity.toast("DataResult is null")
             }
-            viewModel.clearResult()
         }
     }
 

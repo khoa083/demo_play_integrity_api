@@ -70,7 +70,6 @@ class MainActivityViewModel(
 
         } catch (e: Exception) {
             _resultRAW.postValue(DataResult.error("Exception: ${e.message}"))
-            _resultRAW.value = null
         }
     }
 
@@ -101,7 +100,7 @@ class MainActivityViewModel(
     private fun handleError(exception: Exception) {
         _resultRAW.postValue(DataResult.error("Error preparing integrity token provider: ${exception.message}"))
         exception.printStackTrace()
-        integrityTokenProvider = null  // Reset the provider on error
+//        integrityTokenProvider = null  // Reset the provider on error
     }
 
     fun playIntegrityRequestForLocal(applicationContext: Context) {
@@ -122,7 +121,6 @@ class MainActivityViewModel(
             }
         } catch (e: Exception) {
             _resultRAW.postValue(DataResult.error("Exception: ${e.message}"))
-            _resultRAW.value = null
         }
     }
 }

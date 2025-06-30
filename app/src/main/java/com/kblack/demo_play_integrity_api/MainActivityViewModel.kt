@@ -107,6 +107,7 @@ class MainActivityViewModel(
         val nonce = getRequestHashLocal()
         try {
             val integrityManager = IntegrityManagerFactory.create(applicationContext)
+            // TODO: Local nothing to do with cloud project number
             val integrityTokenResponse: Task<IntegrityTokenResponse> =
                 integrityManager.requestIntegrityToken(
                     IntegrityTokenRequest.builder()

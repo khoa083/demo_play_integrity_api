@@ -74,8 +74,8 @@ class MainActivityViewModel(
     }
 
     fun clearResult() {
-        _resultRAW.value = null
-        _result.value = null
+        _resultRAW.postValue(null)
+        _result.postValue(null)
     }
 
     private fun sendTokenToServer(token: String, context: Context) {
@@ -104,6 +104,7 @@ class MainActivityViewModel(
     }
 
     fun playIntegrityRequestForLocal(applicationContext: Context) {
+        _resultRAW.postValue(DataResult.loading())
         val nonce = getRequestHashLocal()
         try {
             val integrityManager = IntegrityManagerFactory.create(applicationContext)

@@ -22,7 +22,7 @@ import javax.crypto.spec.SecretKeySpec
 
 class Utils {
     companion object {
-         fun <T> LiveData<T>.observeNonNull(owner: LifecycleOwner, observer: (T) -> Unit) {
+        fun <T> LiveData<T>.observeNonNull(owner: LifecycleOwner, observer: (T) -> Unit) {
             this.observe(owner, Observer {
                 it?.let {
                     observer(it)

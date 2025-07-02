@@ -14,7 +14,7 @@ plugins {
 
 val versions = mapOf(
     "min_sdk" to 28,
-    "target_sdk" to 35,
+    "target_sdk" to 36,
 
     )
 

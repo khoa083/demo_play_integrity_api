@@ -18,7 +18,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="60dp"
-            android:text="View Terms And Conditions"
+            android:text="Terms And Conditions"
             android:textColor="@color/white"/>
 
         <Button

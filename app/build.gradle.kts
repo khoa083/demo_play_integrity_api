@@ -129,25 +129,38 @@ android {
 }
 
 dependencies {
-
+    // Project dependencies
     implementation(project(":base"))
 
+    // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.bundles.navigation)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.profileinstaller)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+
+    // UI dependencies
+    implementation(libs.material)
+    implementation(libs.bundles.navigation)
+
+    // Network dependencies
     implementation(libs.bundles.retrofit2)
     implementation(libs.bundles.okhttp)
     implementation(platform(libs.okhttp.bom))
+
+    // Lifecycle dependencies
     implementation(libs.bundles.lifecycleAware)
+
+    // Play Integrity and Security
     implementation(libs.playIntegrityApi)
     implementation(libs.jose4j)
+
+    // Test dependencies
+    testImplementation(libs.junit)
+
+    // Android Test dependencies
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
 
 kapt {

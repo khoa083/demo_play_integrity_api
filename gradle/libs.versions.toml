@@ -19,6 +19,7 @@ uiautomator = "2.3.0"
 benchmarkMacroJunit4 = "1.3.4"
 profileinstaller = "1.4.1"
 jose4j = "0.9.6"
+googleServices = "4.4.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -77,5 +78,8 @@ android-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 navigation = { id = "androidx.navigation.safeargs.kotlin" }
 ksp = { id = "com.google.devtools.ksp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
+# google services plugin
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+google-services-app-level = { id = "com.google.gms.google-services" }
 
 

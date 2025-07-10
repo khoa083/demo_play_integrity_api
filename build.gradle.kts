@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.android.ksp) apply false
     alias(libs.plugins.android.navigationSafeArgs) apply false
     alias(libs.plugins.android.test) apply false
+    alias(libs.plugins.google.services) apply false
 }
 
 val versions = mapOf(

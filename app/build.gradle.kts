@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.navigation)
     alias(libs.plugins.ksp)
     id("kotlin-kapt")
+    alias(libs.plugins.google.services.app.level)
 }
 
 android {

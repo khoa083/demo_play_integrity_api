@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.ksp)
     id("kotlin-kapt")
     alias(libs.plugins.google.services.app.level)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.perf)
 }
 
 android {
@@ -96,7 +98,7 @@ android {
         }
         debug {
             isPseudoLocalesEnabled = true
-            applicationIdSuffix = ".debug"
+//            applicationIdSuffix = ".debug"
             versionNameSuffix = rootProject.extra["myVersionName"] as String
         }
 //        create("staging") {
@@ -155,6 +157,10 @@ dependencies {
     // Play Integrity and Security
     implementation(libs.playIntegrityApi)
     implementation(libs.jose4j)
+
+    // Firebase dependencies
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.firebase)
 
     // Test dependencies
     testImplementation(libs.junit)

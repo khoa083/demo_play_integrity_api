@@ -23,10 +23,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.kblack.demo_play_integrity_api" />
+                  <option name="mobileSdkAppId" value="1:683679993739:android:50d8ca7a8654d42910e98e" />
+                  <option name="projectId" value="acoustic-rider-459102-p5" />
+                  <option name="projectNumber" value="683679993739" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

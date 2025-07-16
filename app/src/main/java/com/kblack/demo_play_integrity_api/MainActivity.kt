@@ -71,6 +71,10 @@ class MainActivity() : BaseActivity<ActivityMainBinding, MainActivityViewModel>(
         }
     }
 
+    private fun setUpFirebase() {
+
+    }
+
     override fun showView(isShow: Boolean) {
         TODO("Not yet implemented")
     }

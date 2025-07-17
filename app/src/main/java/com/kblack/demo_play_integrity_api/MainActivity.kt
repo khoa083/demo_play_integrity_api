@@ -20,6 +20,43 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainActivityViewModel>() 
     private lateinit var firebaseManager: FirebaseManager
     private lateinit var repository: Repository
 
+
+    /**
+     * ViewModel for MainActivity, initialized with a factory that provides the necessary dependencies.
+     *
+     *  @sample by viewModels()
+     *  Chỉ hoạt động với ViewModel có constructor rỗng hoặc chỉ nhận Application parameter
+     *  Tự động quản lý lifecycle của ViewModel
+     *  Đơn giản nhưng không hỗ trợ dependency injection
+     * ---------------------------------------------------
+     * chỉ hoạt động nếu ViewModel có constructor như này:
+     * class MainActivityViewModel : BaseViewModel() // ✅
+     * hoặc
+     * class MainActivityViewModel(application: Application) : AndroidViewModel(application) // ✅
+     *
+     * KHÔNG hoạt động với:
+     * class MainActivityViewModel(
+     *     private val repository: Repository,
+     *     private val firebaseManager: FirebaseManager,
+     *     private val errorHandler: ErrorHandler
+     * ) : BaseViewModel() // ❌ Sẽ gây crash
+     * ---------------------------------------------------
+     * @sample by lazy
+     *  by lazy với custom ViewModelFactory
+     *  Sử dụng custom factory để inject dependencies
+     *  Hỗ trợ ViewModel với constructor có parameters
+     *  Khởi tạo dependencies thủ công
+     *  Linh hoạt hơn nhưng phức tạp hơn
+     *  ---------------------------------------------------
+     * // Hoạt động với ViewModel có dependencies:
+     * class MainActivityViewModel(
+     *     private val repository: Repository,
+     *     private val firebaseManager: FirebaseManager,
+     *     private val errorHandler: ErrorHandler
+     * ) : BaseViewModel() // ✅
+     *  ---------------------------------------------------
+     */
+
     override val viewModel: MainActivityViewModel by lazy {
         ViewModelProvider(
             this,
@@ -79,6 +116,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainActivityViewModel>() 
                 }
 
                 DataResult.Status.SUCCESS -> {
+                    // TODO: if use toString() method, it will not format the json string
                     val jsonString = Gson().toJson(dataResult.data)
                     activityBinding.txtResult.text = formatJsonWithColors(jsonString)
                     activityBinding.ldm3.visibility = View.GONE

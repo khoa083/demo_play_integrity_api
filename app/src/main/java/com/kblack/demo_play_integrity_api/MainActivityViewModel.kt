@@ -204,11 +204,6 @@ class MainActivityViewModel(
         }
     }
 
-    fun clearResult() {
-        _resultRAW.postValue(null)
-        _result.postValue(null)
-    }
-
     override fun onCleared() {
         super.onCleared()
         currentTrace?.stop()

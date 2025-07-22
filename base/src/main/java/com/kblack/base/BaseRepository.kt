@@ -50,7 +50,6 @@ abstract class BaseRepository(
     ): Flow<Result<T>> = flow {
         emit(Result.Loading)
 
-        // Giả định có hàm kiểm tra kết nối mạng (cần triển khai riêng)
         if (!isNetworkAvailable(context)) {
             val error = IOException("No network connection")
             onError(error)

@@ -6,7 +6,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.1"
-material = "1.14.0-alpha02"
+material = "1.14.0-alpha03"
 activity = "1.10.1"
 constraintlayout = "2.2.1"
 retrofit2 = "3.0.0"
@@ -21,9 +21,9 @@ profileinstaller = "1.4.1"
 jose4j = "0.9.6"
 googleServices = "4.4.3"
 # Firebase
-firebaseBom = "33.16.0"
-crashlytics = "3.0.4"
-perf = "1.4.2"
+firebaseBom = "34.0.0"
+crashlytics = "3.0.5"
+perf = "2.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

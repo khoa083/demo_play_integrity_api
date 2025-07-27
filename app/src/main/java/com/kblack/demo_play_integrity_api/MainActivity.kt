@@ -81,7 +81,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainActivityViewModel>() 
 
         viewModel.prepareIntegrityTokenProvider(applicationContext)
 
-        // Log screen view
         firebaseManager.logEvent("screen_view", Bundle().apply {
             putString("screen_name", "MainActivity")
         })

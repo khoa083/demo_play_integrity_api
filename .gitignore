@@ -15,3 +15,6 @@
 local.properties
 *.keystore
 *.jks
+/fastlane/*.json
+/fastlane/Appfile
+/fastlane/Fastfile

@@ -14,7 +14,7 @@ plugins {
 }
 
 val versions = mapOf(
-    "min_sdk" to 23,
+    "min_sdk" to 26,
     "target_sdk" to 36,
 
     )
@@ -23,7 +23,7 @@ val versionInfo = mapOf(
     "major" to 1,
     "minor" to 0,
     "patch" to 0,
-    "build" to 4
+    "build" to 5
 )
 
 val myVersionName = "." + "git rev-parse --short=7 HEAD".runCommand(workingDir = rootDir)

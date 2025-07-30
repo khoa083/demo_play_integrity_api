@@ -80,7 +80,7 @@ android {
         }
         buildConfigField("String", "base64_of_encoded_decryption_key", "\"" + properties["base64_of_encoded_decryption_key"] + "\"")
         buildConfigField("String", "base64_of_encoded_verification_key", "\"" + properties["base64_of_encoded_verification_key"] + "\"")
-        setProperty("archivesBaseName", "Kblack-$versionName${versionNameSuffix ?: ""}")
+//        setProperty("archivesBaseName", "Kblack-$versionName${versionNameSuffix ?: ""}")
         vectorDrawables {
             useSupportLibrary = true
         }

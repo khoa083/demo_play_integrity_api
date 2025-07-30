@@ -45,7 +45,7 @@ Deploy a new version to the Google Play
 [bundle exec] fastlane android internal
 ```
 
-Clean and build the project
+Clean and deploy internal testing build to Google Play
 
 ----
 

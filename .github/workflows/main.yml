@@ -1,0 +1,49 @@
+name: Daily Build Check
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 23
+      uses: actions/setup-java@v4
+      with:
+        java-version: '23'
+        distribution: 'temurin'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --stacktrace
+
+#    - name: Build Release APK
+#      run: ./gradlew assembleRelease --stacktrace
+
+    - name: Notify on failure
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issueComment = `
+          🚨 **Build Failed**
+          - Workflow: ${context.workflow}
+          - Job: ${context.job}
+          - Commit: ${context.sha}
+          - Repository: ${context.repo.owner}/${context.repo.repo}
+          - Logs: ${context.run_url}
+          `;
+          github.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: 1, // Replace with a specific issue number or dynamically fetch one
+            body: issueComment
+          });

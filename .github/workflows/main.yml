@@ -10,59 +10,152 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 23
-      uses: actions/setup-java@v4
-      with:
-        java-version: '23'
-        distribution: 'temurin'
+      - name: Set up JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
 
-    - name: Cache Gradle packages
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-    - name: Create local.properties with required values
-      run: |
-        cat > local.properties << EOF
-        sdk.dir=/opt/android-sdk-linux
-        RELEASE_STORE_FILE=dummy.jks
-        RELEASE_STORE_PASSWORD=dummy123
-        RELEASE_KEY_ALIAS=dummy
-        RELEASE_KEY_PASSWORD=dummy123
-        base64_of_encoded_decryption_key=dummy_key
-        base64_of_encoded_verification_key=dummy_verification
-        EOF
+      - name: Create local.properties with required values
+        run: |
+          cat > local.properties << EOF
+          sdk.dir=/opt/android-sdk-linux
+          RELEASE_STORE_FILE=dummy.jks
+          RELEASE_STORE_PASSWORD=dummy123
+          RELEASE_KEY_ALIAS=dummy
+          RELEASE_KEY_PASSWORD=dummy123
+          base64_of_encoded_decryption_key=dummy_key
+          base64_of_encoded_verification_key=dummy_verification
+          EOF
 
-    - name: Create dummy keystore
-      run: |
-        keytool -genkeypair -v -keystore dummy.jks -keyalg RSA -keysize 2048 -validity 10000 -alias dummy -storepass dummy123 -keypass dummy123 -dname "CN=Dummy, OU=Dummy, O=Dummy, L=Dummy, S=Dummy, C=US"
+      - name: Create dummy keystore
+        run: |
+          keytool -genkeypair -v -keystore dummy.jks -keyalg RSA -keysize 2048 -validity 10000 -alias dummy -storepass dummy123 -keypass dummy123 -dname "CN=Dummy, OU=Dummy, O=Dummy, L=Dummy, S=Dummy, C=US"
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
 
-    - name: Run Tests
-      run: ./gradlew test --stacktrace
+      - name: Run Tests
+        run: ./gradlew test --stacktrace
 
-    - name: Notify on failure
-      if: failure()
-      uses: actions/github-script@v6
-      with:
-        script: |
-          github.rest.issues.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            title: `Build Failed - ${new Date().toISOString().split('T')[0]}`,
-            body: `🚨 **Build Failed**\n- Workflow: ${context.workflow}\n- Commit: ${context.sha}\n- Run: ${context.payload.repository.html_url}/actions/runs/${context.runId}`,
-            labels: ['build-failure']
-          });
+      # Lấy thông tin version từ build.gradle
+      - name: Get version info
+        id: version
+        run: |
+          VERSION_NAME=$(grep -E "versionName" app/build.gradle | awk '{print $2}' | tr -d '"')
+          VERSION_CODE=$(grep -E "versionCode" app/build.gradle | awk '{print $2}')
+          COMMIT_SHORT=$(git rev-parse --short HEAD)
+          DATE=$(date +%Y%m%d)
+          
+          # Tạo tag với format tương tự như ảnh
+          TAG_NAME="v${VERSION_NAME}-${DATE}${COMMIT_SHORT}"
+          
+          echo "version_name=${VERSION_NAME}" >> $GITHUB_OUTPUT
+          echo "version_code=${VERSION_CODE}" >> $GITHUB_OUTPUT
+          echo "commit_short=${COMMIT_SHORT}" >> $GITHUB_OUTPUT
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "date=${DATE}" >> $GITHUB_OUTPUT
+
+      # Tìm file APK được tạo
+      - name: Find APK file
+        id: apk_file
+        run: |
+          APK_PATH=$(find app/build/outputs/apk/debug -name "*.apk" | head -1)
+          APK_NAME=$(basename "$APK_PATH")
+          # Đổi tên APK với version info
+          NEW_APK_NAME="app-debug-v${{ steps.version.outputs.version_name }}-${{ steps.version.outputs.date }}.apk"
+          cp "$APK_PATH" "$NEW_APK_NAME"
+          echo "apk_path=${NEW_APK_NAME}" >> $GITHUB_OUTPUT
+          echo "apk_name=${NEW_APK_NAME}" >> $GITHUB_OUTPUT
+
+      # Tạo release với APK
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          release_name: ${{ steps.version.outputs.tag_name }} | HOTFIX
+          body: |
+            🚀 **Automated Daily Build**
+            
+            **Build Info:**
+            - Version: ${{ steps.version.outputs.version_name }}
+            - Version Code: ${{ steps.version.outputs.version_code }}
+            - Commit: ${{ steps.version.outputs.commit_short }}
+            - Build Date: ${{ steps.version.outputs.date }}
+            
+            **Changes:**
+            - Daily automated build check
+            - All tests passed ✅
+            
+            **Download:**
+            - Debug APK available below
+          draft: false
+          prerelease: false
+
+      # Upload APK vào release
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.apk_file.outputs.apk_path }}
+          asset_name: ${{ steps.apk_file.outputs.apk_name }}
+          asset_content_type: application/vnd.android.package-archive
+
+      # Upload APK như artifact (backup)
+      - name: Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk-${{ steps.version.outputs.tag_name }}
+          path: ${{ steps.apk_file.outputs.apk_path }}
+          retention-days: 30
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Build Failed - ${new Date().toISOString().split('T')[0]}`,
+              body: `🚨 **Build Failed**\n- Workflow: ${context.workflow}\n- Commit: ${context.sha}\n- Run: ${context.payload.repository.html_url}/actions/runs/${context.runId}`,
+              labels: ['build-failure']
+            });
+
+      # Thông báo thành công
+      - name: Notify on success
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const tagName = "${{ steps.version.outputs.tag_name }}";
+            const releaseUrl = `${context.payload.repository.html_url}/releases/tag/${tagName}`;
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `✅ Build Success - ${tagName}`,
+              body: `🎉 **Build Completed Successfully**\n\n- Version: ${{ steps.version.outputs.version_name }}\n- Tag: ${tagName}\n- APK: ${{ steps.apk_file.outputs.apk_name }}\n- Release: ${releaseUrl}\n\n**Download APK:** [${tagName}](${releaseUrl})`,
+              labels: ['build-success', 'release']
+            });

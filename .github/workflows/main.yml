@@ -29,9 +29,21 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
-    - name: Create minimal local.properties
+    - name: Create local.properties with required values
       run: |
-        touch local.properties
+        cat > local.properties << EOF
+        sdk.dir=/opt/android-sdk-linux
+        RELEASE_STORE_FILE=dummy.jks
+        RELEASE_STORE_PASSWORD=dummy
+        RELEASE_KEY_ALIAS=dummy
+        RELEASE_KEY_PASSWORD=dummy
+        base64_of_encoded_decryption_key=dummy_key
+        base64_of_encoded_verification_key=dummy_verification
+        EOF
+
+    - name: Create dummy keystore
+      run: |
+        keytool -genkeypair -v -keystore dummy.jks -keyalg RSA -keysize 2048 -validity 10000 -alias dummy -storepass dummy -keypass dummy -dname "CN=Dummy, OU=Dummy, O=Dummy, L=Dummy, S=Dummy, C=US"
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew

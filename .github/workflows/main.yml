@@ -8,6 +8,10 @@ on:
 jobs:
   build-check:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -48,22 +52,38 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
-
       - name: Run Tests
         run: ./gradlew test --stacktrace
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
 
       # Lấy thông tin version từ build.gradle
       - name: Get version info
         id: version
         run: |
-          VERSION_NAME=$(grep -E "versionName" app/build.gradle | awk '{print $2}' | tr -d '"')
-          VERSION_CODE=$(grep -E "versionCode" app/build.gradle | awk '{print $2}')
+          BUILD_GRADLE=""
+          if [ -f "app/build.gradle" ]; then
+            BUILD_GRADLE="app/build.gradle"
+          elif [ -f "app/build.gradle.kts" ]; then
+            BUILD_GRADLE="app/build.gradle.kts"
+          elif [ -f "build.gradle" ]; then
+            BUILD_GRADLE="build.gradle"
+          elif [ -f "build.gradle.kts" ]; then
+            BUILD_GRADLE="build.gradle.kts"
+          fi
+          
+          if [ -n "$BUILD_GRADLE" ]; then
+            VERSION_NAME=$(grep -E "(versionName|VERSION_NAME)" "$BUILD_GRADLE" | head -1 | sed 's/.*[=:][[:space:]]*["'\'']//' | sed 's/["'\''"].*//' || echo "1.0.0")
+            VERSION_CODE=$(grep -E "(versionCode|VERSION_CODE)" "$BUILD_GRADLE" | head -1 | sed 's/.*[=:][[:space:]]*//' | sed 's/[^0-9].*//' || echo "1")
+          else
+            VERSION_NAME="1.0.0"
+            VERSION_CODE="1"
+          fi
+          
           COMMIT_SHORT=$(git rev-parse --short HEAD)
           DATE=$(date +%Y%m%d)
           
-          # Tạo tag với format tương tự như ảnh
           TAG_NAME="v${VERSION_NAME}-${DATE}${COMMIT_SHORT}"
           
           echo "version_name=${VERSION_NAME}" >> $GITHUB_OUTPUT
@@ -71,6 +91,9 @@ jobs:
           echo "commit_short=${COMMIT_SHORT}" >> $GITHUB_OUTPUT
           echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
           echo "date=${DATE}" >> $GITHUB_OUTPUT
+          
+          echo "Found build file: $BUILD_GRADLE"
+          echo "Version: $VERSION_NAME ($VERSION_CODE)"
 
       # Tìm file APK được tạo
       - name: Find APK file
@@ -78,7 +101,6 @@ jobs:
         run: |
           APK_PATH=$(find app/build/outputs/apk/debug -name "*.apk" | head -1)
           APK_NAME=$(basename "$APK_PATH")
-          # Đổi tên APK với version info
           NEW_APK_NAME="app-debug-v${{ steps.version.outputs.version_name }}-${{ steps.version.outputs.date }}.apk"
           cp "$APK_PATH" "$NEW_APK_NAME"
           echo "apk_path=${NEW_APK_NAME}" >> $GITHUB_OUTPUT
@@ -86,13 +108,10 @@ jobs:
 
       # Tạo release với APK
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.tag_name }}
-          release_name: ${{ steps.version.outputs.tag_name }} | HOTFIX
+          name: ${{ steps.version.outputs.tag_name }} | HOTFIX
           body: |
             🚀 **Automated Daily Build**
             
@@ -108,19 +127,9 @@ jobs:
             
             **Download:**
             - Debug APK available below
+          files: ${{ steps.apk_file.outputs.apk_path }}
           draft: false
           prerelease: false
-
-      # Upload APK vào release
-      - name: Upload APK to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.apk_file.outputs.apk_path }}
-          asset_name: ${{ steps.apk_file.outputs.apk_name }}
-          asset_content_type: application/vnd.android.package-archive
 
       # Upload APK như artifact (backup)
       - name: Upload APK as Artifact
@@ -132,30 +141,14 @@ jobs:
 
       - name: Notify on failure
         if: failure()
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `Build Failed - ${new Date().toISOString().split('T')[0]}`,
-              body: `🚨 **Build Failed**\n- Workflow: ${context.workflow}\n- Commit: ${context.sha}\n- Run: ${context.payload.repository.html_url}/actions/runs/${context.runId}`,
-              labels: ['build-failure']
-            });
+        run: |
+          echo "::error::Build failed! Check the logs for details."
+          echo "Build failed at $(date)"
 
       # Thông báo thành công
       - name: Notify on success
         if: success()
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const tagName = "${{ steps.version.outputs.tag_name }}";
-            const releaseUrl = `${context.payload.repository.html_url}/releases/tag/${tagName}`;
-            
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `✅ Build Success - ${tagName}`,
-              body: `🎉 **Build Completed Successfully**\n\n- Version: ${{ steps.version.outputs.version_name }}\n- Tag: ${tagName}\n- APK: ${{ steps.apk_file.outputs.apk_name }}\n- Release: ${releaseUrl}\n\n**Download APK:** [${tagName}](${releaseUrl})`,
-              labels: ['build-success', 'release']
-            });
+        run: |
+          echo "::notice::✅ Build completed successfully!"
+          echo "::notice::Release created: ${{ steps.version.outputs.tag_name }}"
+          echo "::notice::APK: ${{ steps.apk_file.outputs.apk_name }}"

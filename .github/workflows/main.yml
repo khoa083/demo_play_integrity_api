@@ -19,34 +19,38 @@ jobs:
         java-version: '23'
         distribution: 'temurin'
 
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Create minimal local.properties
+      run: |
+        touch local.properties
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-#    - name: Build Debug APK
-#      run: ./gradlew assembleDebug --stacktrace
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --stacktrace
 
-    - name: Test Debug APK
+    - name: Run Tests
       run: ./gradlew test --stacktrace
-
-#    - name: Build Release APK
-#      run: ./gradlew assembleRelease --stacktrace
 
     - name: Notify on failure
       if: failure()
       uses: actions/github-script@v6
       with:
         script: |
-          const issueComment = `
-          🚨 **Build Failed**
-          - Workflow: ${context.workflow}
-          - Job: ${context.job}
-          - Commit: ${context.sha}
-          - Repository: ${context.repo.owner}/${context.repo.repo}
-          - Logs: ${context.run_url}
-          `;
-          github.issues.createComment({
+          github.rest.issues.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            issue_number: 1, // Replace with a specific issue number or dynamically fetch one
-            body: issueComment
+            title: `Build Failed - ${new Date().toISOString().split('T')[0]}`,
+            body: `🚨 **Build Failed**\n- Workflow: ${context.workflow}\n- Commit: ${context.sha}\n- Run: ${context.payload.repository.html_url}/actions/runs/${context.runId}`,
+            labels: ['build-failure']
           });

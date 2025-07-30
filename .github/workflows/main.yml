@@ -62,38 +62,45 @@ jobs:
       - name: Get version info
         id: version
         run: |
-          BUILD_GRADLE=""
-          if [ -f "app/build.gradle" ]; then
-            BUILD_GRADLE="app/build.gradle"
-          elif [ -f "app/build.gradle.kts" ]; then
-            BUILD_GRADLE="app/build.gradle.kts"
-          elif [ -f "build.gradle" ]; then
-            BUILD_GRADLE="build.gradle"
-          elif [ -f "build.gradle.kts" ]; then
-            BUILD_GRADLE="build.gradle.kts"
-          fi
-          
-          if [ -n "$BUILD_GRADLE" ]; then
-            VERSION_NAME=$(grep -E "(versionName|VERSION_NAME)" "$BUILD_GRADLE" | head -1 | sed 's/.*[=:][[:space:]]*["'\'']//' | sed 's/["'\''"].*//' || echo "1.0.0")
-            VERSION_CODE=$(grep -E "(versionCode|VERSION_CODE)" "$BUILD_GRADLE" | head -1 | sed 's/.*[=:][[:space:]]*//' | sed 's/[^0-9].*//' || echo "1")
-          else
+          # Extract version from root build.gradle.kts
+          VERSION_NAME=$(grep -A5 'val versionInfo = mapOf' build.gradle.kts | grep -E '"major"|"minor"|"patch"' | grep -o '[0-9]\+' | tr '\n' '.' | sed 's/\.$//')
+
+          # If extraction fails, use default
+          if [ -z "$VERSION_NAME" ] || [ "$VERSION_NAME" = ".." ]; then
             VERSION_NAME="1.0.0"
-            VERSION_CODE="1"
           fi
-          
+
+          # Extract version code from the calculation
+          VERSION_CODE=$(grep 'versionCode = rootProject.extra\["versionCode"\]' app/build.gradle.kts -A5 -B5 | head -10)
+          if [ -z "$VERSION_CODE" ]; then
+            # Calculate from root build.gradle.kts
+            MAJOR=$(grep '"major" to' build.gradle.kts | grep -o '[0-9]\+')
+            MINOR=$(grep '"minor" to' build.gradle.kts | grep -o '[0-9]\+')
+            PATCH=$(grep '"patch" to' build.gradle.kts | grep -o '[0-9]\+')
+            BUILD=$(grep '"build" to' build.gradle.kts | grep -o '[0-9]\+')
+
+            if [ -n "$MAJOR" ] && [ -n "$MINOR" ] && [ -n "$PATCH" ] && [ -n "$BUILD" ]; then
+              VERSION_CODE=$((MAJOR * 1000000 + MINOR * 10000 + PATCH * 100 + BUILD))
+            else
+              VERSION_CODE="1"
+            fi
+          fi
+
           COMMIT_SHORT=$(git rev-parse --short HEAD)
           DATE=$(date +%Y%m%d)
-          
-          TAG_NAME="v${VERSION_NAME}-${DATE}${COMMIT_SHORT}"
-          
+
+          # Create clean tag name with proper format
+          TAG_NAME="v${VERSION_NAME}-${DATE}-${COMMIT_SHORT}"
+
           echo "version_name=${VERSION_NAME}" >> $GITHUB_OUTPUT
           echo "version_code=${VERSION_CODE}" >> $GITHUB_OUTPUT
           echo "commit_short=${COMMIT_SHORT}" >> $GITHUB_OUTPUT
           echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
           echo "date=${DATE}" >> $GITHUB_OUTPUT
-          
-          echo "Found build file: $BUILD_GRADLE"
-          echo "Version: $VERSION_NAME ($VERSION_CODE)"
+
+          echo "Version Name: $VERSION_NAME"
+          echo "Version Code: $VERSION_CODE"
+          echo "Tag Name: $TAG_NAME"
 
       # Tìm file APK được tạo
       - name: Find APK file

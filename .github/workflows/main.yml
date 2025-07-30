@@ -2,7 +2,7 @@ name: Monthly Build Check
 
 on:
   schedule:
-    - cron: '0 2 1 * *'
+    - cron: '0 2 1 * *'  # Chạy vào ngày 1 hàng tháng lúc 2:00 AM UTC
   workflow_dispatch:
 
 jobs:
@@ -52,9 +52,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-#      - name: Run Tests
-#        run: ./gradlew test --stacktrace
-
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
@@ -62,34 +59,26 @@ jobs:
       - name: Get version info
         id: version
         run: |
-          # Extract version from root build.gradle.kts
-          VERSION_NAME=$(grep -A5 'val versionInfo = mapOf' build.gradle.kts | grep -E '"major"|"minor"|"patch"' | grep -o '[0-9]\+' | tr '\n' '.' | sed 's/\.$//')
+          # Extract version numbers directly from root build.gradle.kts
+          MAJOR=$(grep '"major" to [0-9]' build.gradle.kts | grep -o '[0-9]\+')
+          MINOR=$(grep '"minor" to [0-9]' build.gradle.kts | grep -o '[0-9]\+')
+          PATCH=$(grep '"patch" to [0-9]' build.gradle.kts | grep -o '[0-9]\+')
+          BUILD=$(grep '"build" to [0-9]' build.gradle.kts | grep -o '[0-9]\+')
 
-          # If extraction fails, use default
-          if [ -z "$VERSION_NAME" ] || [ "$VERSION_NAME" = ".." ]; then
-            VERSION_NAME="1.0.0"
-          fi
+          # Set defaults if extraction fails
+          MAJOR=${MAJOR:-1}
+          MINOR=${MINOR:-0}
+          PATCH=${PATCH:-0}
+          BUILD=${BUILD:-1}
 
-          # Extract version code from the calculation
-          VERSION_CODE=$(grep 'versionCode = rootProject.extra\["versionCode"\]' app/build.gradle.kts -A5 -B5 | head -10)
-          if [ -z "$VERSION_CODE" ]; then
-            # Calculate from root build.gradle.kts
-            MAJOR=$(grep '"major" to' build.gradle.kts | grep -o '[0-9]\+')
-            MINOR=$(grep '"minor" to' build.gradle.kts | grep -o '[0-9]\+')
-            PATCH=$(grep '"patch" to' build.gradle.kts | grep -o '[0-9]\+')
-            BUILD=$(grep '"build" to' build.gradle.kts | grep -o '[0-9]\+')
-
-            if [ -n "$MAJOR" ] && [ -n "$MINOR" ] && [ -n "$PATCH" ] && [ -n "$BUILD" ]; then
-              VERSION_CODE=$((MAJOR * 1000000 + MINOR * 10000 + PATCH * 100 + BUILD))
-            else
-              VERSION_CODE="1"
-            fi
-          fi
+          # Create version name and code
+          VERSION_NAME="${MAJOR}.${MINOR}.${PATCH}"
+          VERSION_CODE=$((MAJOR * 1000000 + MINOR * 10000 + PATCH * 100 + BUILD))
 
           COMMIT_SHORT=$(git rev-parse --short HEAD)
           DATE=$(date +%Y%m%d)
 
-          # Create clean tag name with proper format
+          # Create clean tag name
           TAG_NAME="v${VERSION_NAME}-${DATE}-${COMMIT_SHORT}"
 
           echo "version_name=${VERSION_NAME}" >> $GITHUB_OUTPUT
@@ -98,6 +87,11 @@ jobs:
           echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
           echo "date=${DATE}" >> $GITHUB_OUTPUT
 
+          echo "Extracted values:"
+          echo "MAJOR: $MAJOR"
+          echo "MINOR: $MINOR" 
+          echo "PATCH: $PATCH"
+          echo "BUILD: $BUILD"
           echo "Version Name: $VERSION_NAME"
           echo "Version Code: $VERSION_CODE"
           echo "Tag Name: $TAG_NAME"
@@ -107,7 +101,6 @@ jobs:
         id: apk_file
         run: |
           APK_PATH=$(find app/build/outputs/apk/debug -name "*.apk" | head -1)
-          APK_NAME=$(basename "$APK_PATH")
           NEW_APK_NAME="app-debug-v${{ steps.version.outputs.version_name }}-${{ steps.version.outputs.date }}.apk"
           cp "$APK_PATH" "$NEW_APK_NAME"
           echo "apk_path=${NEW_APK_NAME}" >> $GITHUB_OUTPUT
@@ -118,20 +111,20 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.tag_name }}
-          name: ${{ steps.version.outputs.tag_name }} | HOTFIX
+          name: ${{ steps.version.outputs.tag_name }} | Monthly Build
           body: |
-            🚀 **Automated Daily Build**
-            
+            🚀 **Automated Monthly Build**
+
             **Build Info:**
             - Version: ${{ steps.version.outputs.version_name }}
             - Version Code: ${{ steps.version.outputs.version_code }}
             - Commit: ${{ steps.version.outputs.commit_short }}
             - Build Date: ${{ steps.version.outputs.date }}
-            
+
             **Changes:**
-            - Daily automated build check
-            - All tests passed ✅
-            
+            - Monthly automated build check
+            - Debug APK build successful ✅
+
             **Download:**
             - Debug APK available below
           files: ${{ steps.apk_file.outputs.apk_path }}

@@ -2,7 +2,7 @@ name: Monthly Build Check
 
 on:
   schedule:
-    - cron: '0 2 1 * *'  # Chạy vào ngày 1 hàng tháng lúc 2:00 AM UTC
+    - cron: '0 2 1 * *' 
   workflow_dispatch:
 
 jobs:
@@ -55,7 +55,6 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
-      # Lấy thông tin version từ build.gradle
       - name: Get version info
         id: version
         run: |
@@ -96,7 +95,6 @@ jobs:
           echo "Version Code: $VERSION_CODE"
           echo "Tag Name: $TAG_NAME"
 
-      # Tìm file APK được tạo
       - name: Find APK file
         id: apk_file
         run: |
@@ -106,7 +104,6 @@ jobs:
           echo "apk_path=${NEW_APK_NAME}" >> $GITHUB_OUTPUT
           echo "apk_name=${NEW_APK_NAME}" >> $GITHUB_OUTPUT
 
-      # Tạo release với APK
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -131,7 +128,6 @@ jobs:
           draft: false
           prerelease: false
 
-      # Upload APK như artifact (backup)
       - name: Upload APK as Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -145,7 +141,6 @@ jobs:
           echo "::error::Build failed! Check the logs for details."
           echo "Build failed at $(date)"
 
-      # Thông báo thành công
       - name: Notify on success
         if: success()
         run: |

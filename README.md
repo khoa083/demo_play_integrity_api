@@ -1,2 +1,3 @@
-Done Sample client (refactor)
-JDK 23
+Done Sample client (refactor)<br>
+JDK 23<br>
+Update CI/CD

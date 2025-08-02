@@ -59,6 +59,7 @@ abstract class BaseRepository(
 
         try {
             val result = cacheKey?.let { key ->
+                @Suppress("UNCHECKED_CAST")
                 cache[key] as? T
             } ?: run {
                 val data: T = call()

@@ -95,6 +95,23 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
+            packaging {
+                dex {
+                    useLegacyPackaging = false
+                }
+                jniLibs {
+                    useLegacyPackaging = false
+                    keepDebugSymbols += "**/arm64-v8a/*.so"
+                    keepDebugSymbols += "**/armeabi-v7a/*.so"
+                    keepDebugSymbols += "**/x86/*.so"
+                    keepDebugSymbols += "**/x86_64/*.so"
+                }
+                resources {
+                    excludes += "META-INF/*.version"
+                    excludes += "kotlin-tooling-metadata.json"
+                    excludes += "DebugProbesKt.bin"
+                }
+            }
         }
         debug {
             isPseudoLocalesEnabled = true
@@ -172,4 +189,5 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+    generateStubs = true
 }

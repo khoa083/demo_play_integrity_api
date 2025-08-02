@@ -2,89 +2,70 @@ package com.kblack.base.extensions
 
 import android.content.Context
 import android.content.res.Resources
+import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import kotlin.math.roundToInt
 
-fun Context.dp2px(dpValue: Float): Int {
-    val scale = resources.displayMetrics.density
-    return (dpValue * scale + 0.5f).toInt()
-}
+// Extension properties for cleaner access
+private val Context.density: Float
+    get() = resources.displayMetrics.density
 
-fun Context.px2dp(pxValue: Float): Int {
-    val scale = resources.displayMetrics.density
-    return (pxValue / scale + 0.5f).toInt()
-}
+private val Fragment.density: Float
+    get() = resources.displayMetrics.density
 
-fun Context.sp2px(spValue: Float): Int {
-    val scale = resources.displayMetrics.scaledDensity
-    return (spValue * scale + 0.5f).toInt()
-}
-
-fun Context.px2sp(pxValue: Float): Int {
-    val scale = resources.displayMetrics.scaledDensity
-    return (pxValue / scale + 0.5f).toInt()
-}
-
-fun Fragment.dp2px(dpValue: Float): Int {
-    val scale = resources.displayMetrics.density
-    return (dpValue * scale + 0.5f).toInt()
-}
-
-fun Fragment.px2dp(pxValue: Float): Int {
-    val scale = resources.displayMetrics.density
-    return (pxValue / scale + 0.5f).toInt()
-}
-
-fun Fragment.sp2px(spValue: Float): Int {
-    val scale = resources.displayMetrics.scaledDensity
-    return (spValue * scale + 0.5f).toInt()
-}
-
-fun Fragment.px2sp(pxValue: Float): Int {
-    val scale = resources.displayMetrics.scaledDensity
-    return (pxValue / scale + 0.5f).toInt()
-}
-
-///**
+// Context extensions - using TypedValue for SP conversions
 // * Chuyển đổi từ dp (density-independent pixels) sang px (pixels).
-// *
-// * @param dpValue Giá trị dp cần chuyển đổi.
-// * @return Giá trị tương ứng trong px, được làm tròn đến số nguyên gần nhất.
-// */
-//fun Resources.dp2px(dpValue: Float): Int {
-//    val scale = displayMetrics.density
-//    return (dpValue * scale).roundToInt()
-//}
-//
-///**
-// * Chuyển đổi từ px (pixels) sang dp (density-independent pixels).
-// *
-// * @param pxValue Giá trị px cần chuyển đổi.
-// * @return Giá trị tương ứng trong dp, được làm tròn đến số nguyên gần nhất.
-// */
-//fun Resources.px2dp(pxValue: Float): Int {
-//    val scale = displayMetrics.density
-//    return (pxValue / scale).roundToInt()
-//}
-//
-///**
+fun Context.dp(value: Float): Int = (value * density).roundToInt()
+fun Context.dp(value: Int): Int = dp(value.toFloat())
+
 // * Chuyển đổi từ sp (scale-independent pixels) sang px (pixels).
-// *
-// * @param spValue Giá trị sp cần chuyển đổi.
-// * @return Giá trị tương ứng trong px, được làm tròn đến số nguyên gần nhất.
-// */
-//fun Resources.sp2px(spValue: Float): Int {
-//    val scale = displayMetrics.scaledDensity
-//    return (spValue * scale).roundToInt()
-//}
-//
-///**
-// * Chuyển đổi từ px (pixels) sang sp (scale-independent pixels).
-// *
-// * @param pxValue Giá trị px cần chuyển đổi.
-// * @return Giá trị tương ứng trong sp, được làm tròn đến số nguyên gần nhất.
-// */
-//fun Resources.px2sp(pxValue: Float): Int {
-//    val scale = displayMetrics.scaledDensity
-//    return (pxValue / scale).roundToInt()
-//}
+fun Context.sp(value: Float): Int = TypedValue.applyDimension(
+    TypedValue.COMPLEX_UNIT_SP,
+    value,
+    resources.displayMetrics
+).roundToInt()
+fun Context.sp(value: Int): Int = sp(value.toFloat())
+
+fun Context.px2dp(value: Float): Float = value / density
+fun Context.px2dp(value: Int): Float = px2dp(value.toFloat())
+
+fun Context.px2sp(value: Float): Float = value / TypedValue.applyDimension(
+    TypedValue.COMPLEX_UNIT_SP,
+    1f,
+    resources.displayMetrics
+)
+fun Context.px2sp(value: Int): Float = px2sp(value.toFloat())
+
+// Fragment extensions
+fun Fragment.dp(value: Float): Int = requireContext().dp(value)
+fun Fragment.dp(value: Int): Int = requireContext().dp(value)
+
+fun Fragment.sp(value: Float): Int = requireContext().sp(value)
+fun Fragment.sp(value: Int): Int = requireContext().sp(value)
+
+fun Fragment.px2dp(value: Float): Float = requireContext().px2dp(value)
+fun Fragment.px2dp(value: Int): Float = requireContext().px2dp(value)
+
+fun Fragment.px2sp(value: Float): Float = requireContext().px2sp(value)
+fun Fragment.px2sp(value: Int): Float = requireContext().px2sp(value)
+
+// Resources extensions
+fun Resources.dp(value: Float): Int = (value * displayMetrics.density).roundToInt()
+fun Resources.dp(value: Int): Int = dp(value.toFloat())
+
+fun Resources.sp(value: Float): Int = TypedValue.applyDimension(
+    TypedValue.COMPLEX_UNIT_SP,
+    value,
+    displayMetrics
+).roundToInt()
+fun Resources.sp(value: Int): Int = sp(value.toFloat())
+
+fun Resources.px2dp(value: Float): Float = value / displayMetrics.density
+fun Resources.px2dp(value: Int): Float = px2dp(value.toFloat())
+
+fun Resources.px2sp(value: Float): Float = value / TypedValue.applyDimension(
+    TypedValue.COMPLEX_UNIT_SP,
+    1f,
+    displayMetrics
+)
+fun Resources.px2sp(value: Int): Float = px2sp(value.toFloat())

@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-//import com.kblack.base.BR
 import java.util.concurrent.Executors
 
 
@@ -38,6 +37,15 @@ abstract class BaseListAdapter<T : Any, VB : ViewDataBinding>(
         .build()
 ), BaseRecyclerAdapter<T, VB> {
 
+    abstract fun getBindingVariableId(): Int
+
+    /**
+     * get layout res based on view type
+     * override fun getBindingVariableId(): Int {
+     *         return BR.item // Trả về ID biến từ layout XML
+     *     }
+     */
+
     override fun submitList(list: List<T>?) {
         super.submitList(ArrayList<T>(list ?: listOf()))
     }
@@ -53,14 +61,14 @@ abstract class BaseListAdapter<T : Any, VB : ViewDataBinding>(
         })
     }
 
-//    override fun onBindViewHolder(holder: BaseViewHolder<VB>, position: Int) {
-//        val item: T? = getItem(position)
-//        holder.binding.setVariable(BR.item, item)
-//        if (item != null) {
-//            bindView(holder.binding, item, position)
-//        }
-//        holder.binding.executePendingBindings()
-//    }
+    override fun onBindViewHolder(holder: BaseViewHolder<VB>, position: Int) {
+        val item: T? = getItem(position)
+        holder.binding.setVariable(getBindingVariableId(), item)
+        if (item != null) {
+            bindView(holder.binding, item, position)
+        }
+        holder.binding.executePendingBindings()
+    }
 
 }
 

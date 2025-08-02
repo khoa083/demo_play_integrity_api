@@ -165,11 +165,13 @@ fun <T : View> T.withTrigger(delay: Long = 800): T {
  */
 fun <T : View> T.click(block: (T) -> Unit) = setOnClickListener {
     if (clickEnable()) {
+        @Suppress("UNCHECKED_CAST")
         block(it as T)
     }
 }
 
 fun <T:View> T.longClick(block: (T) -> Unit) = setOnLongClickListener{
+    @Suppress("UNCHECKED_CAST")
     block(it as T)
     true
 }
@@ -184,6 +186,7 @@ fun <T : View> T.clickWithTrigger(time: Long = 800, block: (T) -> Unit) {
     triggerDelay = time
     setOnClickListener {
         if (clickEnable()) {
+            @Suppress("UNCHECKED_CAST")
             block(it as T)
         }
     }

@@ -2,6 +2,7 @@ package com.kblack.demo_play_integrity_api.utils
 
 import android.content.Context
 import android.util.Base64
+import androidx.annotation.Keep
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -36,6 +37,7 @@ class Utils {
          * @param length The length of the nonce to generate. Default is 16 bytes.
          * @return A Base64 URL-safe encoded nonce string.
          */
+        @Keep
         fun getRequestHashLocal(length: Int = 16): String {
             val random = SecureRandom()
             val bytes = ByteArray(length)
@@ -53,6 +55,7 @@ class Utils {
          */
 
         // TODO: Only on build internal testing can test
+        @Keep
         fun sendTokenToLocal(token: String, _resultRAW: MutableLiveData<DataResult<Any>?>, applicationContext: Context) {
             val base64OfEncodedDecryptionKey = BuildConfig.base64_of_encoded_decryption_key
             val base64OfEncodedVerificationKey = BuildConfig.base64_of_encoded_verification_key

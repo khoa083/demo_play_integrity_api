@@ -7,17 +7,17 @@ plugins {
 
 android {
     namespace = "com.kblack.base"
-    compileSdk = 36
+    compileSdk = ((rootProject.extra["versions"] as Map<*, *>)["target_sdk"] as Int?)!!
 
     defaultConfig {
-        minSdk = 23
+        minSdk = ((rootProject.extra["versions"] as Map<*, *>)["min_sdk"] as Int?)!!
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    lint {
-        targetSdk = 36
-    }
+//    lint {
+//        targetSdk = 36
+//    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_23
@@ -36,15 +36,15 @@ android {
 
 dependencies {
 
+    // Implementation dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.bundles.navigation)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+
+    // Network dependencies
     implementation(libs.bundles.retrofit2)
     implementation(libs.bundles.okhttp)
     implementation(platform(libs.okhttp.bom))

@@ -1,20 +1,9 @@
 package com.kblack.base.extensions
 
-import android.animation.Animator
-import android.animation.IntEvaluator
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
-import android.app.Activity
 import android.graphics.Paint
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.DecelerateInterpolator
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.animation.doOnEnd
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 
 /**
  * 隐藏View

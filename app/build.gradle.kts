@@ -181,6 +181,7 @@ dependencies {
 
     // Test dependencies
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
 
     // Android Test dependencies
     androidTestImplementation(libs.androidx.junit)

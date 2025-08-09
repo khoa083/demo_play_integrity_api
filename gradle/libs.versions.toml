@@ -22,8 +22,8 @@ profileinstaller = "1.4.1"
 jose4j = "0.9.6"
 googleServices = "4.4.3"
 # Firebase
-firebaseBom = "34.0.0"
-crashlytics = "3.0.5"
+firebaseBom = "34.1.0"
+crashlytics = "3.0.6"
 perf = "2.0.1"
 
 [libraries]

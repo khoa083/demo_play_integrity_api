@@ -32,8 +32,23 @@ android {
 //        generateLocaleConfig = true
 //    }
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+            all {
+                it.jvmArgs(
+                    "-XX:+EnableDynamicAgentLoading",
+                    "-XX:-PrintWarnings",
+                    "-Xshare:off"
+                )
+            }
+        }
+    }
+
     buildFeatures {
         buildConfig = true
+        dataBinding = true
     }
 
     packaging {
@@ -135,10 +150,6 @@ android {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_23)
         }
     }
-    buildFeatures {
-//        viewBinding = true
-        dataBinding = true
-    }
     defaultConfig{
         vectorDrawables.useSupportLibrary = true
     }
@@ -182,6 +193,8 @@ dependencies {
     // Test dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.slf4j.simple)
 
     // Android Test dependencies
     androidTestImplementation(libs.androidx.junit)
@@ -190,5 +203,4 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
-    generateStubs = true
 }

@@ -17,4 +17,9 @@ object AnalyticsEvents {
     // Values
     const val REQUEST_TYPE_STANDARD = "standard"
     const val REQUEST_TYPE_LOCAL = "local"
+
+    // Custom events
+    const val ERROR = "error"
+    const val SUCCESS = "success"
+    const val REQUEST = "request"
 }

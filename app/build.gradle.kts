@@ -21,10 +21,10 @@ android {
                 load(rootProject.file("local.properties").inputStream())
             }
 
-            storeFile = file(properties["RELEASE_STORE_FILE"] as String)
-            storePassword = properties["RELEASE_STORE_PASSWORD"] as String
-            keyAlias = properties["RELEASE_KEY_ALIAS"] as String
-            keyPassword = properties["RELEASE_KEY_PASSWORD"] as String
+//            storeFile = file(properties["RELEASE_STORE_FILE"] as String)
+//            storePassword = properties["RELEASE_STORE_PASSWORD"] as String
+//            keyAlias = properties["RELEASE_KEY_ALIAS"] as String
+//            keyPassword = properties["RELEASE_KEY_PASSWORD"] as String
         }
     }
 
@@ -75,6 +75,7 @@ android {
         applicationId = "com.kblack.demo_play_integrity_api"
         minSdk = ((rootProject.extra["versions"] as Map<*, *>)["min_sdk"] as Int?)!!
         targetSdk = ((rootProject.extra["versions"] as Map<*, *>)["target_sdk"] as Int?)!!
+        // Trên store lấy version dựa theo 2 phần này
         versionCode = rootProject.extra["versionCode"] as Int
         versionName = rootProject.extra["versionName"] as String
 

@@ -21,10 +21,10 @@ android {
                 load(rootProject.file("local.properties").inputStream())
             }
 
-//            storeFile = file(properties["RELEASE_STORE_FILE"] as String)
-//            storePassword = properties["RELEASE_STORE_PASSWORD"] as String
-//            keyAlias = properties["RELEASE_KEY_ALIAS"] as String
-//            keyPassword = properties["RELEASE_KEY_PASSWORD"] as String
+            storeFile = file(properties["RELEASE_STORE_FILE"] as String)
+            storePassword = properties["RELEASE_STORE_PASSWORD"] as String
+            keyAlias = properties["RELEASE_KEY_ALIAS"] as String
+            keyPassword = properties["RELEASE_KEY_PASSWORD"] as String
         }
     }
 

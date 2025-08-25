@@ -2,6 +2,7 @@ package com.kblack.demo_play_integrity_api
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -22,7 +23,6 @@ import com.kblack.demo_play_integrity_api.firebase.AnalyticsEvents
 import com.kblack.demo_play_integrity_api.firebase.FirebaseManager
 import com.kblack.demo_play_integrity_api.model.PIAResponse
 import com.kblack.demo_play_integrity_api.repository.Repository
-import com.kblack.demo_play_integrity_api.utils.Constant.CLOUD_PROJECT_NUMBER
 import com.kblack.demo_play_integrity_api.utils.ErrorHandler
 import com.kblack.demo_play_integrity_api.utils.Utils.Companion.getRequestHashLocal
 import com.kblack.demo_play_integrity_api.utils.Utils.Companion.sendTokenToLocal
@@ -52,7 +52,7 @@ class MainActivityViewModel(
 
             standardIntegrityManager.prepareIntegrityToken(
                 PrepareIntegrityTokenRequest.builder()
-                    .setCloudProjectNumber(CLOUD_PROJECT_NUMBER)
+                    .setCloudProjectNumber(BuildConfig.CLOUD_PROJECT_NUMBER.toLong())
                     .build()
             )
                 .addOnSuccessListener { tokenProvider ->
@@ -100,7 +100,7 @@ class MainActivityViewModel(
                         putLong(AnalyticsEvents.PARAM_RESPONSE_TIME, responseTime)
                         putInt(AnalyticsEvents.PARAM_TOKEN_LENGTH, response?.token()?.length ?: 0)
                     })
-
+                    Log.d("addOnSuccessListener","Integrity token received: ${response?.token().toString()}")
                     sendTokenToServer(response?.token().toString(), applicationContext)
                 }
                 ?.addOnFailureListener { exception ->

@@ -96,6 +96,8 @@ android {
         }
         buildConfigField("String", "base64_of_encoded_decryption_key", "\"" + properties["base64_of_encoded_decryption_key"] + "\"")
         buildConfigField("String", "base64_of_encoded_verification_key", "\"" + properties["base64_of_encoded_verification_key"] + "\"")
+        buildConfigField("String", "BASE_URL", "\"" + properties["BASE_URL"] + "\"")
+        buildConfigField("String", "CLOUD_PROJECT_NUMBER", "\"" + properties["CLOUD_PROJECT_NUMBER"] + "\"")
 //        setProperty("archivesBaseName", "Kblack-$versionName${versionNameSuffix ?: ""}")
         vectorDrawables {
             useSupportLibrary = true

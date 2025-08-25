@@ -2,6 +2,9 @@ Done Sample client (refactor)<br>
 JDK 23<br>
 Update CI/CD (Fastlane, github actions)
 
+## Backend
+[Backend server](https://github.com/khoa083/integrity_api_sv_demo)
+
 ## PlayIntegrity:
 - in order to decrypt the integrity verdict locally on the device or the server you have to manage the corresponding decryption and verification keys by yourself. This is only possible if you have a paid Google Developer Account and registered the app bundle in the [Google Play Console](https://play.google.com/console/about/). Navigate to **Release** -> **Setup** -> **AppIntegrity** -> **Response encryption**, click on **Change** and choose **Manage and download my response encryption keys**. Follow the instructions to create a private-public key pair in order to download the encrypted keys.
 - add the keys to `local.properties` as `base64_of_encoded_decryption_key=...` and `base64_of_encoded_verification_key=...`

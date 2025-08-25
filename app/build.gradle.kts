@@ -99,6 +99,7 @@ android {
         buildConfigField("String", "BASE_URL", "\"" + properties["BASE_URL"] + "\"")
         buildConfigField("String", "CLOUD_PROJECT_NUMBER", "\"" + properties["CLOUD_PROJECT_NUMBER"] + "\"")
 //        setProperty("archivesBaseName", "Kblack-$versionName${versionNameSuffix ?: ""}")
+
         vectorDrawables {
             useSupportLibrary = true
         }
